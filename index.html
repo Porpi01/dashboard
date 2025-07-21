@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Control de Mentoría para Startups</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Azul-gris claro */
+            color: #334155; /* Texto más oscuro */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+        .btn-primary {
+            background-color: #4f46e5; /* Indigo 600 */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover {
+            background-color: #4338ca; /* Indigo 700 */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .btn-secondary {
+            background-color: #6b7280; /* Gris 500 */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563; /* Gris 600 */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .btn-secondary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .input-field, .select-field {
+            border: 1px solid #cbd5e1; /* Slate 300 */
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            box-sizing: border-box; /* Asegura que el padding no aumente el ancho */
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .input-field:focus, .select-field:focus {
+            outline: none;
+            border-color: #4f46e5; /* Indigo 600 */
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); /* Sombra de enfoque */
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            opacity: 0; /* Inicialmente oculto para animación */
+            transform: translateY(-10px); /* Inicialmente un poco arriba */
+            animation: fadeInSlideDown 0.3s forwards;
+        }
+        .alert-success {
+            background-color: #d1fae5; /* Green 100 */
+            color: #065f46; /* Green 800 */
+        }
+        .alert-error {
+            background-color: #fee2e2; /* Red 100 */
+            color: #991b1b; /* Red 800 */
+        }
+        .alert-warning {
+            background-color: #fffbeb; /* Yellow 100 */
+            color: #92400e; /* Yellow 800 */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            border-radius: 0.75rem; /* rounded-xl */
+            overflow: hidden; /* Para que los bordes redondeados se apliquen a la tabla */
+        }
+        th, td {
+            border: 1px solid #e2e8f0; /* Slate 200 */
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f1f5f9; /* Slate 100 */
+            font-weight: 600;
+            color: #475569; /* Slate 700 */
+        }
+        .metric-card {
+            background-color: #f0f9ff; /* Sky 50 */
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s ease-in-out;
+        }
+        .metric-card:hover {
+            background-color: #e0f2fe; /* Sky 100 */
+        }
+        .metric-value {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 700;
+            color: #1d4ed8; /* Blue 700 */
+            transition: color 0.3s ease-in-out;
+        }
+        .metric-label {
+            font-size: 0.875rem; /* text-sm */
+            color: #64748b; /* Slate 500 */
+            margin-top: 0.5rem;
+        }
+        .expander-header {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            font-weight: 600;
+            color: #1e293b; /* Slate 900 */
+            transition: color 0.2s ease-in-out;
+        }
+        .expander-header:hover {
+            color: #4f46e5;
+        }
+        .expander-content {
+            padding-bottom: 1rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            overflow: hidden; /* Para animaciones de altura */
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            max-height: 0;
+            opacity: 0;
+        }
+        .expander-content.active {
+            max-height: 500px; /* Suficientemente grande para contener el contenido */
+            opacity: 1;
+        }
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            border-bottom: 2px solid transparent;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.2s ease-in-out;
+        }
+        .tab-button.active {
+            border-color: #4f46e5;
+            color: #4f46e5;
+        }
+        .tab-button:hover {
+            color: #4f46e5;
+        }
+
+        /* Animaciones */
+        @keyframes fadeInSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #4f46e5;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .loading-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            color: #4f46e5;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="spinner w-12 h-12 border-8"></div>
+            <span>Cargando datos...</span>
+        </div>
+    </div>
+
+    <div class="container py-8">
+        <h1 class="text-5xl font-extrabold text-center text-indigo-700 mb-10">🚀 Panel de Control de Mentoría para Startups</h1>
+
+        <div id="messages" class="mb-4"></div>
+
+        <!-- Key Statistics -->
+        <div class="card fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-chart-bar mr-3 text-indigo-600"></i> Estadísticas Clave
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="metric-card">
+                    <div id="totalStartups" class="metric-value">0</div>
+                    <div class="metric-label">Total de Startups Registradas</div>
+                </div>
+                <!-- Add more metrics here if needed -->
+            </div>
+        </div>
+
+        <!-- Startup Contacts -->
+        <div class="card fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-address-book mr-3 text-indigo-600"></i> Contactos de Startups
+            </h2>
+            <div id="contactsTable" class="overflow-x-auto">
+                <!-- Contacts table will be loaded here by JS -->
+                <p class="text-gray-600" id="noContactsMessage">Cargando contactos...</p>
+            </div>
+        </div>
+
+        <!-- Suggested Connections -->
+        <div class="card fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-handshake mr-3 text-indigo-600"></i> Conexiones Sugeridas para Startups
+            </h2>
+            <label for="selectStartupSuggestions" class="block text-gray-700 text-sm font-bold mb-2">Selecciona tu Startup:</label>
+            <select id="selectStartupSuggestions" class="select-field mb-4"></select>
+
+            <div id="sessionStatus" class="mb-6 hidden">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Estado de tus Sesiones:</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="metric-card">
+                        <div id="sessionsAllotted" class="metric-value">0</div>
+                        <div class="metric-label">Sesiones Asignadas para Recibir</div>
+                    </div>
+                    <div class="metric-card">
+                        <div id="sessionsReceived" class="metric-value">0</div>
+                        <div class="metric-label">Sesiones Recibidas</div>
+                    </div>
+                    <div class="metric-card">
+                        <div id="sessionsLent" class="metric-value">0</div>
+                        <div class="metric-label">Sesiones Prestadas</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">Startups con Intereses Similares:</h3>
+            <div id="similarStartups" class="space-y-4">
+                <p class="text-gray-600" id="noSuggestionsMessage">Selecciona una startup para ver sugerencias.</p>
+            </div>
+        </div>
+
+        <!-- Mentorship Session Marketplace -->
+        <div class="card fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-comments mr-3 text-indigo-600"></i> Mercado de Sesiones de Mentoría
+            </h2>
+            <div class="flex border-b border-gray-200 mb-6">
+                <button class="tab-button active" data-tab="offer">📤 Ofrecer Sesión</button>
+                <button class="tab-button" data-tab="request">📥 Solicitar Sesión</button>
+                <button class="tab-button" data-tab="view-match">🔍 Ver y Emparejar Sesiones</button>
+            </div>
+
+            <div id="tabContent">
+                <!-- Offer Session Tab -->
+                <div id="offer" class="tab-pane active">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Ofrecer un Espacio de Sesión</h3>
+                    <p class="text-gray-600 mb-4">Puedes ofrecer una de tus sesiones 'asignadas para recibir' a otra startup que lo necesite.</p>
+                    <form id="offerForm" class="space-y-4">
+                        <div>
+                            <label for="offeringStartup" class="block text-gray-700 text-sm font-bold mb-2">Tu Startup:</label>
+                            <select id="offeringStartup" class="select-field" required></select>
+                        </div>
+                        <div>
+                            <label for="offerTopic" class="block text-gray-700 text-sm font-bold mb-2">Tema sobre el que puedes mentorizar (ej. 'Estrategias de Recaudación de Fondos', 'Ajuste Producto-Mercado'):</label>
+                            <input type="text" id="offerTopic" class="input-field" placeholder="Introduce el tema" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Ofrecer Sesión</button>
+                    </form>
+                </div>
+
+                <!-- Request Session Tab -->
+                <div id="request" class="tab-pane hidden">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Solicitar una Sesión</h3>
+                    <p class="text-gray-600 mb-4">Solicita una sesión sobre un tema específico. Puedes recibir hasta 2 sesiones, más cualquier sesión adicional prestada.</p>
+                    <form id="requestForm" class="space-y-4">
+                        <div>
+                            <label for="requestingStartup" class="block text-gray-700 text-sm font-bold mb-2">Tu Startup:</label>
+                            <select id="requestingStartup" class="select-field" required></select>
+                        </div>
+                        <div>
+                            <label for="requestTopic" class="block text-gray-700 text-sm font-bold mb-2">Tema en el que necesitas ayuda (ej. 'Estrategia de Marketing', 'Asesoramiento Legal'):</label>
+                            <input type="text" id="requestTopic" class="input-field" placeholder="Introduce el tema" required>
+                        </div>
+                        <button type="submit" class="btn-primary">Solicitar Sesión</button>
+                    </form>
+                </div>
+
+                <!-- View & Match Sessions Tab -->
+                <div id="view-match" class="tab-pane hidden">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Ver Todas las Ofertas y Solicitudes de Sesiones</h3>
+
+                    <div class="mb-6">
+                        <label for="filterStartupView" class="block text-gray-700 text-sm font-bold mb-2">Filtrar por Tu Startup:</label>
+                        <select id="filterStartupView" class="select-field"></select>
+                    </div>
+
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Ofertas de Sesiones Disponibles</h4>
+                    <div id="availableOffersTable" class="overflow-x-auto mb-6">
+                        <p class="text-gray-600" id="noAvailableOffersMessage">Cargando ofertas...</p>
+                    </div>
+
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Reclamar una Sesión Disponible</h4>
+                    <div class="mb-6">
+                        <label for="claimOfferSelect" class="block text-gray-700 text-sm font-bold mb-2">Selecciona una Oferta para Reclamar:</label>
+                        <select id="claimOfferSelect" class="select-field"></select>
+                        <label for="claimingStartup" class="block text-gray-700 text-sm font-bold mb-2 mt-4">Tu Startup (Reclamante):</label>
+                        <select id="claimingStartup" class="select-field"></select>
+                        <button id="claimSessionBtn" class="btn-primary mt-4">Reclamar Sesión Seleccionada</button>
+                    </div>
+
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Solicitudes de Sesiones Pendientes</h4>
+                    <div id="pendingRequestsTable" class="overflow-x-auto mb-6">
+                        <p class="text-gray-600" id="noPendingRequestsMessage">Cargando solicitudes...</p>
+                    </div>
+
+                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Historial de Sesiones (Reclamaciones Completadas)</h4>
+                    <div id="sessionHistoryTable" class="overflow-x-auto">
+                        <p class="text-gray-600" id="noSessionHistoryMessage">Cargando historial...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base URL for your FastAPI backend
+        const BASE_API_URL = "http://localhost:8000"; // IMPORTANTE: Cambia esto si tu servidor FastAPI está en un host/puerto diferente
+
+        let allStartups = [];
+        let startupMap = {}; // Mapea el nombre de la empresa al objeto completo de la startup
+        let startupNameToId = {}; // Mapea el nombre de la empresa al ID de string (_id)
+
+        let currentDashboardData = {
+            key_statistics: { total_startups: 0 },
+            startup_contacts: [],
+            all_startups: [],
+            available_session_offers: [],
+            pending_session_requests: [],
+            session_history: []
+        };
+
+        const messagesDiv = document.getElementById('messages');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        function showMessage(message, type = 'success') {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            messagesDiv.innerHTML = ''; // Limpiar mensajes anteriores
+            messagesDiv.appendChild(alertDiv);
+            // El CSS maneja la animación de aparición
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000); // Eliminar después de 5 segundos
+        }
+
+        function showLoading() {
+            if (loadingOverlay) loadingOverlay.classList.add('active');
+        }
+
+        function hideLoading() {
+            if (loadingOverlay) loadingOverlay.classList.remove('active');
+        }
+
+        // Helper para obtener datos de la API
+        async function fetchData(url) {
+            showLoading();
+            try {
+                const response = await fetch(`${BASE_API_URL}${url}`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `Error HTTP! estado: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log("Datos recibidos del backend:", data); // Log para depuración
+                return data;
+            } catch (error) {
+                console.error("Error de fetch:", error);
+                showMessage(`Error: ${error.message}`, 'error');
+                return null;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Helper para enviar datos a la API
+        async function postData(url, data) {
+            showLoading();
+            try {
+                const response = await fetch(`${BASE_API_URL}${url}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.detail || `Error HTTP! estado: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error("Error de post:", error);
+                showMessage(`Error: ${error.message}`, 'error');
+                return null;
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // --- Funciones de Renderizado de Datos ---
+
+        function renderKeyStatistics(data) {
+            const totalStartupsEl = document.getElementById('totalStartups');
+            if (totalStartupsEl) {
+                totalStartupsEl.textContent = data.total_startups;
+            }
+        }
+
+        function renderContactsTable(contacts) {
+            const contactsTableDiv = document.getElementById('contactsTable');
+            if (!contactsTableDiv) return;
+
+            contactsTableDiv.innerHTML = ''; // Limpiar mensaje de carga
+
+            if (contacts && contacts.length > 0) {
+                let tableHTML = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Empresa</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacto</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Sector</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                contacts.forEach(contact => {
+                    tableHTML += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${contact.company || 'N/A'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${contact.contact || 'N/A'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${contact.email || 'N/A'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${contact.sector || 'N/A'}</td>
+                        </tr>
+                    `;
+                });
+                tableHTML += `</tbody></table>`;
+                contactsTableDiv.innerHTML = tableHTML;
+            } else {
+                contactsTableDiv.innerHTML = '<p class="text-gray-600">No hay contactos disponibles aún.</p>';
+            }
+        }
+
+        function renderAvailableOffersTable(offers) {
+            const availableOffersTableDiv = document.getElementById('availableOffersTable');
+            const claimOfferSelect = document.getElementById('claimOfferSelect');
+            if (!availableOffersTableDiv || !claimOfferSelect) return;
+
+            availableOffersTableDiv.innerHTML = '';
+            claimOfferSelect.innerHTML = '<option value="">-- Selecciona una oferta --</option>';
+
+            const filterStartupViewEl = document.getElementById('filterStartupView');
+            const filterId = filterStartupViewEl && filterStartupViewEl.value !== "All Startups" ? startupNameToId[filterStartupViewEl.value] : null;
+
+            const filteredOffers = offers ? offers.filter(offer => {
+                // Mostrar ofertas NO hechas por la startup seleccionada, ya que no pueden reclamar las suyas propias
+                return !filterId || offer.offering_startup_id !== filterId;
+            }) : [];
+
+            if (filteredOffers.length > 0) {
+                let tableHTML = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Startup que Ofrece</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tema</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Fecha/Hora</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                filteredOffers.forEach(offer => {
+                    const timestamp = new Date(offer.timestamp).toLocaleString();
+                    tableHTML += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${offer.offering_startup_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${offer.topic}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestamp}</td>
+                        </tr>
+                    `;
+                    // Rellenar el cuadro de selección de reclamación
+                    claimOfferSelect.innerHTML += `<option value="${offer.id}">${offer.offering_startup_name} - ${offer.topic} (Ofrecida el ${timestamp})</option>`;
+                });
+                tableHTML += `</tbody></table>`;
+                availableOffersTableDiv.innerHTML = tableHTML;
+            } else {
+                availableOffersTableDiv.innerHTML = '<p class="text-gray-600">No hay ofertas de sesiones disponibles en este momento.</p>';
+                claimOfferSelect.innerHTML = '<option value="">-- No hay ofertas para reclamar --</option>';
+            }
+        }
+
+        function renderPendingRequestsTable(requests) {
+            const pendingRequestsTableDiv = document.getElementById('pendingRequestsTable');
+            if (!pendingRequestsTableDiv) return;
+
+            pendingRequestsTableDiv.innerHTML = '';
+
+            const filterStartupViewEl = document.getElementById('filterStartupView');
+            const filterId = filterStartupViewEl && filterStartupViewEl.value !== "All Startups" ? startupNameToId[filterStartupViewEl.value] : null;
+
+            const filteredRequests = requests ? requests.filter(req => {
+                // Mostrar solicitudes hechas por la startup seleccionada
+                return !filterId || req.requesting_startup_id === filterId;
+            }) : [];
+
+            if (filteredRequests.length > 0) {
+                let tableHTML = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Startup Solicitante</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tema</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Fecha/Hora</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                filteredRequests.forEach(req => {
+                    const timestamp = new Date(req.timestamp).toLocaleString();
+                    tableHTML += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${req.requesting_startup_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${req.topic}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestamp}</td>
+                        </tr>
+                    `;
+                });
+                tableHTML += `</tbody></table>`;
+                pendingRequestsTableDiv.innerHTML = tableHTML;
+            } else {
+                pendingRequestsTableDiv.innerHTML = '<p class="text-gray-600">No hay solicitudes de sesiones pendientes en este momento.</p>';
+            }
+        }
+
+        function renderSessionHistoryTable(history) {
+            const sessionHistoryTableDiv = document.getElementById('sessionHistoryTable');
+            if (!sessionHistoryTableDiv) return;
+
+            sessionHistoryTableDiv.innerHTML = '';
+
+            const filterStartupViewEl = document.getElementById('filterStartupView');
+            const filterId = filterStartupViewEl && filterStartupViewEl.value !== "All Startups" ? startupNameToId[filterStartupViewEl.value] : null;
+
+            const filteredHistory = history ? history.filter(sess => {
+                // Mostrar sesiones donde la startup seleccionada fue la que ofreció o la que reclamó
+                return !filterId || sess.offering_startup_id === filterId || sess.claiming_startup_id === filterId;
+            }) : [];
+
+            if (filteredHistory.length > 0) {
+                let tableHTML = `
+                    <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Startup que Ofrece</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Startup Reclamante</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tema</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Fecha/Hora</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                `;
+                filteredHistory.forEach(sess => {
+                    const timestamp = new Date(sess.timestamp).toLocaleString();
+                    tableHTML += `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${sess.offering_startup_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${sess.claiming_startup_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${sess.topic}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestamp}</td>
+                        </tr>
+                    `;
+                });
+                tableHTML += `</tbody></table>`;
+                sessionHistoryTableDiv.innerHTML = tableHTML;
+            } else {
+                sessionHistoryTableDiv.innerHTML = '<p class="text-gray-600">No hay reclamaciones de sesiones completadas aún.</p>';
+            }
+        }
+
+        // --- Funciones de Población de UI ---
+
+        function populateStartupSelects(startupsData) {
+            allStartups = startupsData; // Actualizar allStartups global
+            startupMap = {};
+            startupNameToId = {};
+            console.log("All Startups Data for Suggestions:", allStartups); // Added log
+            allStartups.forEach(s => {
+                if (s.company) {
+                    startupMap[s.company] = s;
+                    startupNameToId[s.company] = s.id;
+                }
+            });
+
+            const startupSelects = [
+                document.getElementById('selectStartupSuggestions'),
+                document.getElementById('offeringStartup'),
+                document.getElementById('requestingStartup'),
+                document.getElementById('claimingStartup'),
+                document.getElementById('filterStartupView')
+            ];
+
+            startupSelects.forEach(selectElement => {
+                if (!selectElement) return; // Add null check for select element
+
+                const currentSelectedValue = selectElement.value; // Preservar la selección actual si existe
+                selectElement.innerHTML = ''; // Limpiar opciones existentes
+                if (selectElement.id === 'filterStartupView') {
+                    selectElement.innerHTML += '<option value="All Startups">Todas las Startups</option>';
+                }
+
+                allStartups.forEach(startup => {
+                    if (startup.company) {
+                        const option = document.createElement('option');
+                        option.value = startup.company;
+                        option.textContent = startup.company;
+                        selectElement.appendChild(option);
+                    }
+                });
+                // Restaurar la selección o establecer el valor predeterminado
+                if (currentSelectedValue && Array.from(selectElement.options).some(opt => opt.value === currentSelectedValue)) {
+                    selectElement.value = currentSelectedValue;
+                } else if (allStartups.length > 0 && selectElement.id !== 'filterStartupView') {
+                    selectElement.value = allStartups[0].company;
+                }
+            });
+
+            // Disparar el evento 'change' para el select de sugerencias para cargar las sugerencias iniciales
+            const selectStartupSuggestionsEl = document.getElementById('selectStartupSuggestions');
+            if (selectStartupSuggestionsEl && selectStartupSuggestionsEl.value) {
+                selectStartupSuggestionsEl.dispatchEvent(new Event('change'));
+            }
+            // Disparar el evento 'change' para el select de filtro para cargar las tablas filtradas iniciales
+            const filterStartupViewEl = document.getElementById('filterStartupView');
+            if (filterStartupViewEl) {
+                filterStartupViewEl.dispatchEvent(new Event('change'));
+            }
+        }
+
+        function updateSuggestedConnections() {
+            const selectStartupSuggestionsEl = document.getElementById('selectStartupSuggestions');
+            if (!selectStartupSuggestionsEl) return; // Ensure element exists
+
+            const selectedName = selectStartupSuggestionsEl.value;
+            console.log("Selected Startup Name for Suggestions:", selectedName);
+            const selectedStartupData = startupMap[selectedName];
+            console.log("Selected Startup Data for Suggestions:", selectedStartupData);
+
+            const similarStartupsDiv = document.getElementById('similarStartups');
+            const noSuggestionsMessage = document.getElementById('noSuggestionsMessage');
+            const sessionStatusDiv = document.getElementById('sessionStatus');
+
+            if (similarStartupsDiv) similarStartupsDiv.innerHTML = ''; // Limpiar sugerencias anteriores
+            if (noSuggestionsMessage) noSuggestionsMessage.classList.add('hidden'); // Ocultar mensaje predeterminado inicialmente
+            if (sessionStatusDiv) sessionStatusDiv.classList.add('hidden'); // Ocultar estado de sesión inicialmente
+
+            if (!selectedStartupData) {
+                if (noSuggestionsMessage) {
+                    noSuggestionsMessage.classList.remove('hidden');
+                    noSuggestionsMessage.textContent = "Por favor, selecciona una startup para ver sugerencias.";
+                }
+                console.log("No selected startup data found.");
+                return;
+            }
+
+            // Mostrar estado de la sesión
+            if (sessionStatusDiv) {
+                sessionStatusDiv.classList.remove('hidden');
+                const sessionsAllottedEl = document.getElementById('sessionsAllotted');
+                const sessionsReceivedEl = document.getElementById('sessionsReceived');
+                const sessionsLentEl = document.getElementById('sessionsLent');
+
+                if (sessionsAllottedEl) sessionsAllottedEl.textContent = selectedStartupData.sessions_allotted_to_receive;
+                if (sessionsReceivedEl) sessionsReceivedEl.textContent = selectedStartupData.sessions_received;
+                if (sessionsLentEl) sessionsLentEl.textContent = selectedStartupData.sessions_lent;
+            }
+
+            const sector = selectedStartupData.sector;
+            const stage = selectedStartupData.stage;
+            console.log("Selected Startup Sector:", sector, "Stage:", stage);
+
+            const suggestions = allStartups.filter(s => {
+                const isSameId = s.id === selectedStartupData.id;
+                const isSimilarSector = s.sector === sector && sector !== null && sector !== 'N/A' && sector !== '';
+                const isSimilarStage = s.stage === stage && stage !== null && stage !== 'N/A' && stage !== '';
+                
+                // Log each startup being considered for filtering
+                console.log(`Checking startup ${s.company || 'N/A'}: ID=${s.id || 'N/A'}, Sector=${s.sector || 'N/A'}, Stage=${s.stage || 'N/A'}`);
+                console.log(`  isSameId: ${isSameId}, isSimilarSector: ${isSimilarSector}, isSimilarStage: ${isSimilarStage}`);
+
+                return !isSameId && (isSimilarSector || isSimilarStage);
+            });
+            console.log("Filtered Suggestions (before top 5):", suggestions);
+
+            const top5 = suggestions.slice(0, 5);
+            console.log("Top 5 Suggestions:", top5);
+
+            if (top5.length > 0) {
+                top5.forEach(s => {
+                    const expander = document.createElement('div');
+                    expander.className = 'card mb-2 p-4'; // Usar estilo de tarjeta para el expander
+                    expander.innerHTML = `
+                        <div class="expander-header">
+                            <span><strong>${s.company || 'Startup'}</strong> - Sector: ${s.sector || 'N/A'} | Etapa: ${s.stage || 'N/A'}</span>
+                            <span><i class="fas fa-chevron-down"></i></span> <!-- Flecha hacia abajo -->
+                        </div>
+                        <div class="expander-content">
+                            <p><strong>Descripción:</strong> ${s.description || 'N/A'}</p>
+                            ${s.website ? `<p><strong>Sitio Web:</strong> <a href="${s.website.startsWith('http') ? s.website : 'https://' + s.website}" target="_blank" class="text-indigo-600 hover:underline">${s.website}</a></p>` : ''}
+                            <p><strong>Correo Electrónico de Contacto:</strong> ${s.email || 'N/A'}</p>
+                        </div>
+                    `;
+                    expander.querySelector('.expander-header').addEventListener('click', () => {
+                        const content = expander.querySelector('.expander-content');
+                        const icon = expander.querySelector('.expander-header i');
+                        if (content) content.classList.toggle('active'); // Activar/desactivar la clase 'active'
+                        if (icon) {
+                            if (content && content.classList.contains('active')) {
+                                icon.classList.remove('fa-chevron-down');
+                                icon.classList.add('fa-chevron-up');
+                            } else {
+                                icon.classList.remove('fa-chevron-up');
+                                icon.classList.add('fa-chevron-down');
+                            }
+                        }
+                    });
+                    if (similarStartupsDiv) similarStartupsDiv.appendChild(expander);
+                });
+            } else {
+                if (noSuggestionsMessage) {
+                    noSuggestionsMessage.classList.remove('hidden');
+                    noSuggestionsMessage.textContent = "No se encontraron sugerencias para esta startup basadas en el sector o la etapa.";
+                }
+                console.log("No suggestions found based on filter criteria.");
+            }
+        }
+
+        // --- Manejadores de Envío de Formularios ---
+
+        document.getElementById('offerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const offeringStartupName = document.getElementById('offeringStartup').value;
+            const offerTopic = document.getElementById('offerTopic').value;
+            const offeringStartupId = startupNameToId[offeringStartupName];
+
+            if (!offeringStartupId) {
+                showMessage("Startup seleccionada no encontrada.", 'error');
+                return;
+            }
+
+            const payload = {
+                offering_startup_id: offeringStartupId,
+                offering_startup_name: offeringStartupName,
+                topic: offerTopic
+            };
+
+            const result = await postData("/session-offers", payload);
+            if (result) {
+                showMessage(`¡Sesión sobre '${offerTopic}' ofrecida por ${offeringStartupName} con éxito!`);
+                document.getElementById('offerTopic').value = ''; // Limpiar formulario
+                await initApp(); // Recargar todos los datos del panel
+            }
+        });
+
+        document.getElementById('requestForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const requestingStartupName = document.getElementById('requestingStartup').value;
+            const requestTopic = document.getElementById('requestTopic').value;
+            const requestingStartupId = startupNameToId[requestingStartupName];
+
+            if (!requestingStartupId) {
+                showMessage("Startup seleccionada no encontrada.", 'error');
+                return;
+            }
+
+            const payload = {
+                requesting_startup_id: requestingStartupId,
+                requesting_startup_name: requestingStartupName,
+                topic: requestTopic
+            };
+
+            const result = await postData("/session-requests", payload);
+            if (result) {
+                showMessage(`¡Sesión sobre '${requestTopic}' solicitada por ${requestingStartupName} con éxito!`);
+                document.getElementById('requestTopic').value = ''; // Limpiar formulario
+                await initApp(); // Recargar todos los datos del panel
+            }
+        });
+
+        document.getElementById('claimSessionBtn').addEventListener('click', async () => {
+            const selectedOfferId = document.getElementById('claimOfferSelect').value;
+            const claimingStartupName = document.getElementById('claimingStartup').value;
+            const claimingStartupId = startupNameToId[claimingStartupName];
+
+            if (!selectedOfferId) {
+                showMessage("Por favor, selecciona una oferta para reclamar.", 'warning');
+                return;
+            }
+            if (!claimingStartupId) {
+                showMessage("Por favor, selecciona tu startup reclamante.", 'warning');
+                return;
+            }
+
+            const payload = {
+                claiming_startup_id: claimingStartupId,
+                claiming_startup_name: claimingStartupName
+            };
+
+            const result = await postData(`/session-offers/${selectedOfferId}/claim`, payload);
+            if (result) {
+                // Find the offering startup name from currentDashboardData.available_session_offers
+                const claimedOffer = currentDashboardData.available_session_offers.find(offer => offer.id === selectedOfferId);
+                const offeringStartupName = claimedOffer ? claimedOffer.offering_startup_name : 'desconocida';
+                showMessage(`¡Sesión de ${offeringStartupName} reclamada por ${claimingStartupName} con éxito!`);
+                await initApp(); // Recargar todos los datos del panel
+            }
+        });
+
+        // --- Lógica de Cambio de Pestañas ---
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.add('hidden'));
+                document.getElementById(button.dataset.tab).classList.remove('hidden');
+
+                // Volver a renderizar las tablas para la pestaña de ver/emparejar según el filtro actual
+                if (button.dataset.tab === 'view-match') {
+                    renderAvailableOffersTable(currentDashboardData.available_session_offers);
+                    renderPendingRequestsTable(currentDashboardData.pending_session_requests);
+                    renderSessionHistoryTable(currentDashboardData.session_history);
+                }
+            });
+        });
+
+        // --- Escuchadores de Eventos ---
+        const selectStartupSuggestionsEl = document.getElementById('selectStartupSuggestions');
+        if (selectStartupSuggestionsEl) {
+            selectStartupSuggestionsEl.addEventListener('change', updateSuggestedConnections);
+        }
+        const filterStartupViewEl = document.getElementById('filterStartupView');
+        if (filterStartupViewEl) {
+            filterStartupViewEl.addEventListener('change', () => {
+                renderAvailableOffersTable(currentDashboardData.available_session_offers);
+                renderPendingRequestsTable(currentDashboardData.pending_session_requests);
+                renderSessionHistoryTable(currentDashboardData.session_history);
+            });
+        }
+
+
+        // --- Función de Carga Inicial ---
+        async function initApp() {
+            const data = await fetchData("/"); // Obtener todos los datos del panel desde el endpoint raíz
+            if (data) {
+                currentDashboardData = data; // Almacenar los datos obtenidos globalmente
+
+                // Renderizar todas las secciones usando los datos combinados
+                renderKeyStatistics(currentDashboardData.key_statistics);
+                renderContactsTable(currentDashboardData.startup_contacts);
+                populateStartupSelects(currentDashboardData.all_startups); // Esto también dispara updateSuggestedConnections y el cambio de filterStartupView
+                renderAvailableOffersTable(currentDashboardData.available_session_offers);
+                renderPendingRequestsTable(currentDashboardData.pending_session_requests);
+                renderSessionHistoryTable(currentDashboardData.session_history);
+            }
+        }
+
+        window.onload = initApp;
+
+    </script>
+</body>
+</html>

@@ -2,10 +2,12 @@
 import os
 from datetime import datetime
 from dotenv import load_dotenv
-from typing import List, Optional, Dict, Any, Annotated # Import Annotated
+from typing import List, Optional, Dict, Any, Annotated
 
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse # Importar FileResponse
 from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 from bson import ObjectId
@@ -15,9 +17,8 @@ from pydantic import BaseModel, Field, BeforeValidator, ConfigDict
 load_dotenv()
 
 # --- MongoDB Connection ---
-# Using a global variable for the database instance, similar to Streamlit's @st.cache_resource
 db_client: MongoClient = None
-db: Any = None # To hold the database object
+db: Any = None
 
 def init_connection():
     """Initializes and returns the MongoDB connection."""
@@ -25,21 +26,19 @@ def init_connection():
     try:
         mongo_url = os.getenv("DATABASE_URL")
         if not mongo_url:
-            print("DATABASE_URL not found in .env, using default URL.")
+            print("DATABASE_URL not found in .env, using default URL. PLEASE SET IT IN RENDER ENVIRONMENT VARIABLES.")
             # Default URL - REPLACE WITH YOUR ACTUAL MONGODB CONNECTION STRING
+            # This default URL is for local testing ONLY. It will likely fail on Render.
             mongo_url = "mongodb+srv://user:password@cluster.mongodb.net/?retryWrites=true&w=majority"
         
         db_client = MongoClient(mongo_url, server_api=ServerApi('1'))
-        # Corrected: Use db_client instead of client
         db = db_client["prueba"] # Database name
         
-        # Ping the database to confirm connection
         db_client.admin.command('ping')
         print("✅ MongoDB connection established successfully!")
         return db
     except Exception as e:
         print(f"❌ Error connecting to MongoDB: {e}")
-        # In a real application, you might want to log this and exit or raise a specific error
         raise RuntimeError(f"Failed to connect to MongoDB: {e}")
 
 # Initialize connection when the application starts
@@ -53,11 +52,8 @@ session_history_collection = db["session_history"]
 
 # --- Pydantic Models for Data Validation and Serialization ---
 
-# Custom type for PyMongo's ObjectId
-# CORRECTED: Use Annotated with BeforeValidator for Pydantic v2
 PyObjectId = Annotated[str, BeforeValidator(str)]
 
-# Helper function for BeforeValidator to convert None to empty string
 def none_to_empty_str(v: Optional[str]) -> str:
     return v if v is not None else ""
 
@@ -69,14 +65,12 @@ class StartupBase(BaseModel):
     stage: Optional[str] = None
     description: Optional[str] = None
     website: Optional[str] = None
-    sessions_allotted_to_receive: int = 2 # Default value
+    sessions_allotted_to_receive: int = 2
     sessions_received: int = 0
     sessions_lent: int = 0
 
 class StartupInDB(StartupBase):
-    id: PyObjectId = Field(alias="_id", default=None) # MongoDB's _id field
-    
-    # Apply BeforeValidator directly to fields to convert None to empty string
+    id: PyObjectId = Field(alias="_id", default=None)
     sector: Annotated[str, BeforeValidator(none_to_empty_str)] = Field(None, description="Sector of the startup", validate_default=True)
     stage: Annotated[str, BeforeValidator(none_to_empty_str)] = Field(None, description="Stage of the startup (e.g., Seed, Series A)", validate_default=True)
 
@@ -97,43 +91,43 @@ class StartupInDB(StartupBase):
     })
 
 class SessionOfferCreate(BaseModel):
-    offering_startup_id: PyObjectId # Changed to PyObjectId
+    offering_startup_id: PyObjectId
     offering_startup_name: str
     topic: str
 
 class SessionOfferInDB(SessionOfferCreate):
     id: PyObjectId = Field(alias="_id", default=None)
-    status: str = "available" # 'available', 'claimed', 'used'
+    status: str = "available"
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    claimed_by_startup_id: Optional[PyObjectId] = None # Changed to PyObjectId
+    claimed_by_startup_id: Optional[PyObjectId] = None
     claimed_by_startup_name: Optional[str] = None
     model_config = ConfigDict(populate_by_name=True, arbitrary_types_allowed=True)
 
 class SessionRequestCreate(BaseModel):
-    requesting_startup_id: PyObjectId # Changed to PyObjectId
+    requesting_startup_id: PyObjectId
     requesting_startup_name: str
     topic: str
 
 class SessionRequestInDB(SessionRequestCreate):
     id: PyObjectId = Field(alias="_id", default=None)
-    status: str = "pending" # 'pending', 'fulfilled', 'cancelled'
+    status: str = "pending"
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    fulfilled_by_offer_id: Optional[PyObjectId] = None # Changed to PyObjectId
-    fulfilled_by_startup_id: Optional[PyObjectId] = None # Changed to PyObjectId
+    fulfilled_by_offer_id: Optional[PyObjectId] = None
+    fulfilled_by_startup_id: Optional[PyObjectId] = None
     fulfilled_by_startup_name: Optional[str] = None
     model_config = ConfigDict(populate_by_name=True, arbitrary_types_allowed=True)
 
 class ClaimSessionRequest(BaseModel):
-    claiming_startup_id: PyObjectId # Changed to PyObjectId
+    claiming_startup_id: PyObjectId
     claiming_startup_name: str
 
 class SessionHistoryInDB(BaseModel):
     id: PyObjectId = Field(alias="_id", default=None)
     type: str = "claimed_session"
-    offer_id: PyObjectId # Changed to PyObjectId
-    offering_startup_id: PyObjectId # Changed to PyObjectId
+    offer_id: PyObjectId
+    offering_startup_id: PyObjectId
     offering_startup_name: str
-    claiming_startup_id: PyObjectId # Changed to PyObjectId
+    claiming_startup_id: PyObjectId
     claiming_startup_name: str
     topic: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
@@ -156,8 +150,18 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+# Montar la carpeta 'static' para servir archivos estáticos (CSS, JS, imágenes, etc.)
+# Esto NO servirá index.html por defecto, solo los archivos dentro de 'static'
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Endpoint para servir el archivo index.html en la raíz
 @app.get("/")
-async def read_root():
+async def serve_frontend():
+    """Serves the main frontend application (index.html)."""
+    return FileResponse("static/index.html")
+
+@app.get("/api") # Endpoint principal de la API para el dashboard
+async def get_dashboard_data():
     """
     Returns a comprehensive overview of all dashboard data, including:
     - Total number of registered startups.
@@ -168,6 +172,7 @@ async def read_root():
     - Completed session history.
     """
     try:
+        print("API endpoint /api was hit!") # Log para depuración
         # Fetch total startups
         total_startups = startups_collection.count_documents({})
 
@@ -194,7 +199,6 @@ async def read_root():
                 doc['sessions_lent'] = 0
                 startups_collection.update_one({"_id": doc['_id']}, {"$set": {"sessions_lent": 0}})
             
-            # Use model_dump() without by_alias=True to ensure 'id' field is present in JSON
             all_startups_data.append(StartupInDB(**doc).model_dump()) 
 
         # Fetch available session offers
@@ -227,12 +231,11 @@ async def read_root():
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error loading dashboard data: {e}")
 
 # --- Startup Endpoints ---
-@app.get("/startups", response_model=List[StartupInDB])
+@app.get("/api/startups", response_model=List[StartupInDB])
 async def get_all_startups():
     """Retrieve all registered startups."""
     startups = []
     for doc in startups_collection.find({}):
-        # Ensure session fields are initialized if missing
         if 'sessions_allotted_to_receive' not in doc:
             doc['sessions_allotted_to_receive'] = 2
             startups_collection.update_one({"_id": doc['_id']}, {"$set": {"sessions_allotted_to_receive": 2}})
@@ -245,13 +248,12 @@ async def get_all_startups():
         startups.append(StartupInDB(**doc))
     return startups
 
-@app.get("/startups/{startup_id}", response_model=StartupInDB)
+@app.get("/api/startups/{startup_id}", response_model=StartupInDB)
 async def get_startup_by_id(startup_id: str):
     """Retrieve a specific startup by its ID."""
     try:
         startup_doc = startups_collection.find_one({"_id": ObjectId(startup_id)})
         if startup_doc:
-            # Ensure session fields are initialized if missing
             if 'sessions_allotted_to_receive' not in startup_doc:
                 startup_doc['sessions_allotted_to_receive'] = 2
                 startups_collection.update_one({"_id": startup_doc['_id']}, {"$set": {"sessions_allotted_to_receive": 2}})
@@ -266,7 +268,7 @@ async def get_startup_by_id(startup_id: str):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid Startup ID or other error: {e}")
 
-@app.get("/startups_contacts")
+@app.get("/api/startups_contacts")
 async def get_startups_contacts():
     """Retrieve contact information for all startups."""
     contacts = []
@@ -278,14 +280,14 @@ async def get_startups_contacts():
         contacts.append(doc)
     return contacts
 
-@app.get("/startups_total")
+@app.get("/api/startups_total")
 async def get_total_startups():
     """Get the total count of registered startups."""
     total = startups_collection.count_documents({})
     return {"total_startups": total}
 
 # --- Session Offer Endpoints ---
-@app.post("/session-offers", response_model=SessionOfferInDB, status_code=status.HTTP_201_CREATED)
+@app.post("/api/session-offers", response_model=SessionOfferInDB, status_code=status.HTTP_201_CREATED)
 async def create_session_offer(offer: SessionOfferCreate):
     """Create a new session offer."""
     try:
@@ -325,7 +327,7 @@ async def create_session_offer(offer: SessionOfferCreate):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error creating session offer: {e}")
 
-@app.get("/session-offers", response_model=List[SessionOfferInDB])
+@app.get("/api/session-offers", response_model=List[SessionOfferInDB])
 async def get_available_session_offers():
     """Retrieve all available session offers."""
     offers = []
@@ -333,7 +335,7 @@ async def get_available_session_offers():
         offers.append(SessionOfferInDB(**doc))
     return offers
 
-@app.post("/session-offers/{offer_id}/claim", response_model=SessionHistoryInDB)
+@app.post("/api/session-offers/{offer_id}/claim", response_model=SessionHistoryInDB)
 async def claim_session_offer(offer_id: str, claim_request: ClaimSessionRequest):
     """Claim an available session offer."""
     try:
@@ -404,7 +406,7 @@ async def claim_session_offer(offer_id: str, claim_request: ClaimSessionRequest)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error claiming session: {e}")
 
 # --- Session Request Endpoints ---
-@app.post("/session-requests", response_model=SessionRequestInDB, status_code=status.HTTP_201_CREATED)
+@app.post("/api/session-requests", response_model=SessionRequestInDB, status_code=status.HTTP_201_CREATED)
 async def create_session_request(request: SessionRequestCreate):
     """Create a new session request."""
     try:
@@ -428,7 +430,7 @@ async def create_session_request(request: SessionRequestCreate):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error creating session request: {e}")
 
-@app.get("/session-requests", response_model=List[SessionRequestInDB])
+@app.get("/api/session-requests", response_model=List[SessionRequestInDB])
 async def get_pending_session_requests():
     """Retrieve all pending session requests."""
     requests = []
@@ -437,7 +439,7 @@ async def get_pending_session_requests():
     return requests
 
 # --- Session History Endpoints ---
-@app.get("/session-history", response_model=List[SessionHistoryInDB])
+@app.get("/api/session-history", response_model=List[SessionHistoryInDB])
 async def get_session_history():
     """Retrieve all completed session transactions."""
     history = []

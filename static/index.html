@@ -406,8 +406,19 @@
     </div>
 
     <script>
-        // Base URL for your FastAPI backend
-        const BASE_API_URL = "http://localhost:8000"; // IMPORTANTE: Cambia esto si tu servidor FastAPI está en un host/puerto diferente
+        // Base URL para tu backend FastAPI.
+        // Si el frontend es servido por el mismo FastAPI (como en Render),
+        // window.location.origin será la URL base de tu aplicación (ej: https://tudominio.onrender.com).
+        // Las llamadas a la API se construirán como https://tudominio.onrender.com/api/ruta_api
+        let BASE_API_URL;
+
+        // Detectar si el archivo HTML se está abriendo directamente desde el sistema de archivos (para desarrollo local)
+        if (window.location.protocol === "file:") {
+            BASE_API_URL = "http://localhost:8000/api"; // Para pruebas locales, asumiendo que FastAPI corre en 8000 y sus rutas API están bajo /api
+            console.warn("Modo de desarrollo local detectado: Las llamadas a la API se dirigirán a http://localhost:8000/api. Asegúrate de que tu backend FastAPI esté ejecutándose allí.");
+        } else {
+            BASE_API_URL = window.location.origin + "/api"; // Para despliegue en Render, donde FastAPI sirve el HTML y la API está bajo /api
+        }
 
         let allStartups = [];
         let startupMap = {}; // Mapea el nombre de la empresa al objeto completo de la startup
@@ -446,10 +457,10 @@
         }
 
         // Helper para obtener datos de la API
-        async function fetchData(url) {
+        async function fetchData(path) { // 'path' será como "" (para /api), "/startups", "/session-offers", etc.
             showLoading();
             try {
-                const response = await fetch(`${BASE_API_URL}${url}`);
+                const response = await fetch(`${BASE_API_URL}${path}`);
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.detail || `Error HTTP! estado: ${response.status}`);
@@ -467,10 +478,10 @@
         }
 
         // Helper para enviar datos a la API
-        async function postData(url, data) {
+        async function postData(path, data) { // 'path' será como "/session-offers", "/session-offers/{id}/claim", etc.
             showLoading();
             try {
-                const response = await fetch(`${BASE_API_URL}${url}`, {
+                const response = await fetch(`${BASE_API_URL}${path}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -699,9 +710,14 @@
 
                 const currentSelectedValue = selectElement.value; // Preservar la selección actual si existe
                 selectElement.innerHTML = ''; // Limpiar opciones existentes
-                if (selectElement.id === 'filterStartupView') {
+                
+                // Add default "select" option for suggestion dropdown, and "All Startups" for filter dropdown
+                if (selectElement.id === 'selectStartupSuggestions') {
+                    selectElement.innerHTML += '<option value="">-- Selecciona una startup --</option>';
+                } else if (selectElement.id === 'filterStartupView') {
                     selectElement.innerHTML += '<option value="All Startups">Todas las Startups</option>';
                 }
+
 
                 allStartups.forEach(startup => {
                     if (startup.company) {
@@ -714,16 +730,23 @@
                 // Restaurar la selección o establecer el valor predeterminado
                 if (currentSelectedValue && Array.from(selectElement.options).some(opt => opt.value === currentSelectedValue)) {
                     selectElement.value = currentSelectedValue;
-                } else if (allStartups.length > 0 && selectElement.id !== 'filterStartupView') {
+                } else if (allStartups.length > 0 && selectElement.id !== 'filterStartupView' && selectElement.id !== 'selectStartupSuggestions') {
+                    // For offering, requesting, claiming, default to first startup if no previous selection
                     selectElement.value = allStartups[0].company;
+                } else if (selectElement.id === 'filterStartupView') {
+                    selectElement.value = 'All Startups'; // Ensure "All Startups" is selected by default
+                } else if (selectElement.id === 'selectStartupSuggestions') {
+                    selectElement.value = ''; // Ensure default "select a startup" is shown
                 }
             });
 
             // Disparar el evento 'change' para el select de sugerencias para cargar las sugerencias iniciales
             const selectStartupSuggestionsEl = document.getElementById('selectStartupSuggestions');
-            if (selectStartupSuggestionsEl && selectStartupSuggestionsEl.value) {
+            // Only trigger change if a valid startup is already selected (not the default empty option)
+            if (selectStartupSuggestionsEl && selectStartupSuggestionsEl.value && selectStartupSuggestionsEl.value !== "") {
                 selectStartupSuggestionsEl.dispatchEvent(new Event('change'));
             }
+            
             // Disparar el evento 'change' para el select de filtro para cargar las tablas filtradas iniciales
             const filterStartupViewEl = document.getElementById('filterStartupView');
             if (filterStartupViewEl) {
@@ -748,12 +771,12 @@
             if (noSuggestionsMessage) noSuggestionsMessage.classList.add('hidden'); // Ocultar mensaje predeterminado inicialmente
             if (sessionStatusDiv) sessionStatusDiv.classList.add('hidden'); // Ocultar estado de sesión inicialmente
 
-            if (!selectedStartupData) {
+            if (!selectedStartupData || selectedName === "") { // Added check for empty string selection
                 if (noSuggestionsMessage) {
                     noSuggestionsMessage.classList.remove('hidden');
                     noSuggestionsMessage.textContent = "Por favor, selecciona una startup para ver sugerencias.";
                 }
-                console.log("No selected startup data found.");
+                console.log("No selected startup data found or empty selection.");
                 return;
             }
 
@@ -775,11 +798,17 @@
 
             const suggestions = allStartups.filter(s => {
                 const isSameId = s.id === selectedStartupData.id;
-                const isSimilarSector = s.sector === sector && sector !== null && sector !== 'N/A' && sector !== '';
-                const isSimilarStage = s.stage === stage && stage !== null && stage !== 'N/A' && stage !== '';
+                // Modificado: Asegurar que los valores sean cadenas no vacías para la comparación
+                const sSector = s.sector || '';
+                const sStage = s.stage || '';
+                const selectedSector = sector || '';
+                const selectedStage = stage || '';
+
+                const isSimilarSector = sSector === selectedSector && selectedSector !== '';
+                const isSimilarStage = sStage === selectedStage && selectedStage !== '';
                 
                 // Log each startup being considered for filtering
-                console.log(`Checking startup ${s.company || 'N/A'}: ID=${s.id || 'N/A'}, Sector=${s.sector || 'N/A'}, Stage=${s.stage || 'N/A'}`);
+                console.log(`Checking startup ${s.company || 'N/A'}: ID=${s.id || 'N/A'}, Sector='${sSector}', Stage='${sStage}'`);
                 console.log(`  isSameId: ${isSameId}, isSimilarSector: ${isSimilarSector}, isSimilarStage: ${isSimilarStage}`);
 
                 return !isSameId && (isSimilarSector || isSimilarStage);
@@ -848,7 +877,7 @@
                 topic: offerTopic
             };
 
-            const result = await postData("/session-offers", payload);
+            const result = await postData("/session-offers", payload); 
             if (result) {
                 showMessage(`¡Sesión sobre '${offerTopic}' ofrecida por ${offeringStartupName} con éxito!`);
                 document.getElementById('offerTopic').value = ''; // Limpiar formulario
@@ -873,7 +902,7 @@
                 topic: requestTopic
             };
 
-            const result = await postData("/session-requests", payload);
+            const result = await postData("/session-requests", payload); 
             if (result) {
                 showMessage(`¡Sesión sobre '${requestTopic}' solicitada por ${requestingStartupName} con éxito!`);
                 document.getElementById('requestTopic').value = ''; // Limpiar formulario
@@ -900,7 +929,7 @@
                 claiming_startup_name: claimingStartupName
             };
 
-            const result = await postData(`/session-offers/${selectedOfferId}/claim`, payload);
+            const result = await postData(`/session-offers/${selectedOfferId}/claim`, payload); 
             if (result) {
                 // Find the offering startup name from currentDashboardData.available_session_offers
                 const claimedOffer = currentDashboardData.available_session_offers.find(offer => offer.id === selectedOfferId);
@@ -945,7 +974,8 @@
 
         // --- Función de Carga Inicial ---
         async function initApp() {
-            const data = await fetchData("/"); // Obtener todos los datos del panel desde el endpoint raíz
+            // Obtener todos los datos del panel desde el endpoint raíz de la API
+            const data = await fetchData(""); // Ahora el path es "" porque BASE_API_URL ya incluye /api
             if (data) {
                 currentDashboardData = data; // Almacenar los datos obtenidos globalmente
 

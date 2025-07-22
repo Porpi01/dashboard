@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,48 +12,70 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        :root {
+            --main-gradient: linear-gradient(90deg, #1f0d1e, #070d34);
+            --vertical-gradient: linear-gradient(180deg, #1f0d1e, #070d34);
+            --text-content: #070d34;
+            --title-content: #1f0d1e;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc; /* Azul-gris claro */
-            color: #334155; /* Texto más oscuro */
+            background-color: #f8fafc;
+            /* Azul-gris claro */
+            color: #334155;
+            /* Texto más oscuro */
         }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
         }
+
         .card {
             background-color: #ffffff;
-            border-radius: 0.75rem; /* rounded-xl */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+            border-radius: 0.75rem;
+            /* rounded-xl */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            /* shadow-md */
             padding: 1.5rem;
             margin-bottom: 1.5rem;
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
+
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
         }
+
         .btn-primary {
-            background-color: #4f46e5; /* Indigo 600 */
+            background-color: var(--text-content);
+            /* Indigo 600 */
             color: white;
             padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem; /* rounded-lg */
+            border-radius: 0.5rem;
+            /* rounded-lg */
             font-weight: 600;
             transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .btn-primary:hover {
-            background-color: #4338ca; /* Indigo 700 */
+            background-color: var(--text-content);
+            /* Indigo 700 */
             transform: translateY(-2px);
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
+
         .btn-primary:active {
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .btn-secondary {
-            background-color: #6b7280; /* Gris 500 */
+            background-color: #6b7280;
+            /* Gris 500 */
             color: white;
             padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
@@ -60,90 +83,133 @@
             transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
+
         .btn-secondary:hover {
-            background-color: #4b5563; /* Gris 600 */
+            background-color: #4b5563;
+            /* Gris 600 */
             transform: translateY(-2px);
             box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
+
         .btn-secondary:active {
             transform: translateY(0);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .input-field, .select-field {
-            border: 1px solid #cbd5e1; /* Slate 300 */
+
+        .input-field,
+        .select-field {
+            border: 1px solid #cbd5e1;
+            /* Slate 300 */
             border-radius: 0.5rem;
             padding: 0.75rem 1rem;
             width: 100%;
             margin-top: 0.5rem;
             margin-bottom: 1rem;
-            box-sizing: border-box; /* Asegura que el padding no aumente el ancho */
+            box-sizing: border-box;
+            /* Asegura que el padding no aumente el ancho */
             transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
-        .input-field:focus, .select-field:focus {
+
+        .input-field:focus,
+        .select-field:focus {
             outline: none;
-            border-color: #4f46e5; /* Indigo 600 */
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); /* Sombra de enfoque */
+            border-color: var(--text-content);
+            /* Indigo 600 */
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            /* Sombra de enfoque */
         }
+
         .alert {
             padding: 1rem;
             border-radius: 0.5rem;
             margin-bottom: 1rem;
             font-weight: 500;
-            opacity: 0; /* Inicialmente oculto para animación */
-            transform: translateY(-10px); /* Inicialmente un poco arriba */
+            opacity: 0;
+            /* Inicialmente oculto para animación */
+            transform: translateY(-10px);
+            /* Inicialmente un poco arriba */
             animation: fadeInSlideDown 0.3s forwards;
         }
+
         .alert-success {
-            background-color: #d1fae5; /* Green 100 */
-            color: #065f46; /* Green 800 */
+            background-color: #d1fae5;
+            /* Green 100 */
+            color: #065f46;
+            /* Green 800 */
         }
+
         .alert-error {
-            background-color: #fee2e2; /* Red 100 */
-            color: #991b1b; /* Red 800 */
+            background-color: #fee2e2;
+            /* Red 100 */
+            color: #991b1b;
+            /* Red 800 */
         }
+
         .alert-warning {
-            background-color: #fffbeb; /* Yellow 100 */
-            color: #92400e; /* Yellow 800 */
+            background-color: #fffbeb;
+            /* Yellow 100 */
+            color: #92400e;
+            /* Yellow 800 */
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
-            border-radius: 0.75rem; /* rounded-xl */
-            overflow: hidden; /* Para que los bordes redondeados se apliquen a la tabla */
+            border-radius: 0.75rem;
+            /* rounded-xl */
+            overflow: hidden;
+            /* Para que los bordes redondeados se apliquen a la tabla */
         }
-        th, td {
-            border: 1px solid #e2e8f0; /* Slate 200 */
+
+        th,
+        td {
+            border: 1px solid #e2e8f0;
+            /* Slate 200 */
             padding: 0.75rem;
             text-align: left;
         }
+
         th {
-            background-color: #f1f5f9; /* Slate 100 */
+            background-color: #f1f5f9;
+            /* Slate 100 */
             font-weight: 600;
-            color: #475569; /* Slate 700 */
+            color: #475569;
+            /* Slate 700 */
         }
+
         .metric-card {
-            background-color: #f0f9ff; /* Sky 50 */
+            background-color: #f0f9ff;
+            /* Sky 50 */
             border-radius: 0.75rem;
             padding: 1rem;
             text-align: center;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             transition: background-color 0.3s ease-in-out;
         }
+
         .metric-card:hover {
-            background-color: #e0f2fe; /* Sky 100 */
+            background-color: #e0f2fe;
+            /* Sky 100 */
         }
+
         .metric-value {
-            font-size: 2.25rem; /* text-4xl */
+            font-size: 2.25rem;
+            /* text-4xl */
             font-weight: 700;
-            color: #1d4ed8; /* Blue 700 */
+            color: var(--text-content);
+            /* Blue 700 */
             transition: color 0.3s ease-in-out;
         }
+
         .metric-label {
-            font-size: 0.875rem; /* text-sm */
-            color: #64748b; /* Slate 500 */
+            font-size: 0.875rem;
+            /* text-sm */
+            color: #64748b;
+            /* Slate 500 */
             margin-top: 0.5rem;
         }
+
         .expander-header {
             cursor: pointer;
             display: flex;
@@ -151,26 +217,33 @@
             align-items: center;
             padding: 0.75rem 0;
             font-weight: 600;
-            color: #1e293b; /* Slate 900 */
+            color: #1e293b;
+            /* Slate 900 */
             transition: color 0.2s ease-in-out;
         }
+
         .expander-header:hover {
-            color: #4f46e5;
+            color: var(--text-content);
         }
+
         .expander-content {
             padding-bottom: 1rem;
             border-top: 1px solid #e2e8f0;
             margin-top: 0.5rem;
             padding-top: 0.5rem;
-            overflow: hidden; /* Para animaciones de altura */
+            overflow: hidden;
+            /* Para animaciones de altura */
             transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
             max-height: 0;
             opacity: 0;
         }
+
         .expander-content.active {
-            max-height: 500px; /* Suficientemente grande para contener el contenido */
+            max-height: 500px;
+            /* Suficientemente grande para contener el contenido */
             opacity: 1;
         }
+
         .tab-button {
             padding: 0.75rem 1.5rem;
             border-bottom: 2px solid transparent;
@@ -178,12 +251,14 @@
             color: #64748b;
             transition: all 0.2s ease-in-out;
         }
+
         .tab-button.active {
-            border-color: #4f46e5;
-            color: #4f46e5;
+            border-color: var(--text-content);
+            color: var(--text-content);
         }
+
         .tab-button:hover {
-            color: #4f46e5;
+            color: var(--text-content);
         }
 
         /* Animaciones */
@@ -192,15 +267,23 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
+
         .fade-in {
             animation: fadeIn 0.5s ease-out forwards;
         }
@@ -208,7 +291,7 @@
         /* Loading Spinner */
         .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #4f46e5;
+            border-left-color: var(--text-content);
             border-radius: 50%;
             width: 24px;
             height: 24px;
@@ -217,10 +300,17 @@
             vertical-align: middle;
             margin-right: 8px;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -236,21 +326,44 @@
             visibility: hidden;
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
         }
+
         .loading-overlay.active {
             opacity: 1;
             visibility: visible;
         }
+
         .loading-content {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 1rem;
-            color: #4f46e5;
+            color: var(--text-content);
             font-size: 1.25rem;
             font-weight: 600;
         }
+
+        h1 {
+            color: var(--title-content);
+            /* Aplica el color de la variable --title-content */
+        }
+
+        h2 {
+            color: var(--text-content);
+            /* Aplica el color de la variable --text-content */
+        }
+
+        h3 {
+            color: var(--text-content);
+            /* También aplica a los h3 para consistencia */
+        }
+
+        h4 {
+            color: var(--text-content);
+            /* También aplica a los h4 para consistencia */
+        }
     </style>
 </head>
+
 <body class="bg-gray-50">
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
@@ -261,14 +374,15 @@
     </div>
 
     <div class="container py-8">
-        <h1 class="text-5xl font-extrabold text-center text-indigo-700 mb-10">🚀 Panel de Control de Mentoría para Startups</h1>
+        <h1 class="text-5xl font-extrabold text-center mb-10">Panel de Control de Mentoría para
+            Startups</h1>
 
         <div id="messages" class="mb-4"></div>
 
         <!-- Key Statistics -->
         <div class="card fade-in">
             <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
-                <i class="fas fa-chart-bar mr-3 text-indigo-600"></i> Estadísticas Clave
+                <i class="fas fa-chart-bar mr-3 "></i> Estadísticas Clave
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="metric-card">
@@ -280,41 +394,29 @@
         </div>
 
         <!-- Startup Contacts -->
-        <div class="card fade-in">
-            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
-                <i class="fas fa-address-book mr-3 text-indigo-600"></i> Contactos de Startups
+        <div class="card mt-8 fade-in">
+            <h2 class="text-3xl font-bold mb-6 flex items-center text-gray-800">
+                <i class="fas fa-address-book mr-3"></i> Contactos de Startups
             </h2>
-            <div id="contactsTable" class="overflow-x-auto">
-                <!-- Contacts table will be loaded here by JS -->
-                <p class="text-gray-600" id="noContactsMessage">Cargando contactos...</p>
+            <div class="mb-4">
+                <input type="text" id="contactSearchInput" class="input-field" placeholder="Buscar por empresa..."
+                    oninput="filterContacts()">
+            </div>
+            <div id="contactsTable" class="overflow-x-auto max-h-96 rounded-lg border border-gray-200">
+                <p class="text-gray-600 p-4 text-center" id="noContactsMessage">Cargando contactos...</p>
             </div>
         </div>
 
         <!-- Suggested Connections -->
         <div class="card fade-in">
             <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
-                <i class="fas fa-handshake mr-3 text-indigo-600"></i> Conexiones Sugeridas para Startups
+                <i class="fas fa-handshake mr-3 "></i> Conexiones Sugeridas para Startups
             </h2>
-            <label for="selectStartupSuggestions" class="block text-gray-700 text-sm font-bold mb-2">Selecciona tu Startup:</label>
+            <label for="selectStartupSuggestions" class="block text-gray-700 text-sm font-bold mb-2">Selecciona tu
+                Startup:</label>
             <select id="selectStartupSuggestions" class="select-field mb-4"></select>
 
-            <div id="sessionStatus" class="mb-6 hidden">
-                <h3 class="text-2xl font-semibold text-gray-800 mb-4">Estado de tus Sesiones:</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="metric-card">
-                        <div id="sessionsAllotted" class="metric-value">0</div>
-                        <div class="metric-label">Sesiones Asignadas para Recibir</div>
-                    </div>
-                    <div class="metric-card">
-                        <div id="sessionsReceived" class="metric-value">0</div>
-                        <div class="metric-label">Sesiones Recibidas</div>
-                    </div>
-                    <div class="metric-card">
-                        <div id="sessionsLent" class="metric-value">0</div>
-                        <div class="metric-label">Sesiones Prestadas</div>
-                    </div>
-                </div>
-            </div>
+
 
             <h3 class="text-2xl font-semibold text-gray-800 mb-4">Startups con Intereses Similares:</h3>
             <div id="similarStartups" class="space-y-4">
@@ -322,151 +424,86 @@
             </div>
         </div>
 
-        <!-- Mentorship Session Marketplace -->
-        <div class="card fade-in">
-            <h2 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
-                <i class="fas fa-comments mr-3 text-indigo-600"></i> Mercado de Sesiones de Mentoría
-            </h2>
-            <div class="flex border-b border-gray-200 mb-6">
-                <button class="tab-button active" data-tab="offer">📤 Ofrecer Sesión</button>
-                <button class="tab-button" data-tab="request">📥 Solicitar Sesión</button>
-                <button class="tab-button" data-tab="view-match">🔍 Ver y Emparejar Sesiones</button>
-            </div>
 
-            <div id="tabContent">
-                <!-- Offer Session Tab -->
-                <div id="offer" class="tab-pane active">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Ofrecer un Espacio de Sesión</h3>
-                    <p class="text-gray-600 mb-4">Puedes ofrecer una de tus sesiones 'asignadas para recibir' a otra startup que lo necesite.</p>
-                    <form id="offerForm" class="space-y-4">
-                        <div>
-                            <label for="offeringStartup" class="block text-gray-700 text-sm font-bold mb-2">Tu Startup:</label>
-                            <select id="offeringStartup" class="select-field" required></select>
-                        </div>
-                        <div>
-                            <label for="offerTopic" class="block text-gray-700 text-sm font-bold mb-2">Tema sobre el que puedes mentorizar (ej. 'Estrategias de Recaudación de Fondos', 'Ajuste Producto-Mercado'):</label>
-                            <input type="text" id="offerTopic" class="input-field" placeholder="Introduce el tema" required>
-                        </div>
-                        <button type="submit" class="btn-primary">Ofrecer Sesión</button>
-                    </form>
-                </div>
-
-                <!-- Request Session Tab -->
-                <div id="request" class="tab-pane hidden">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Solicitar una Sesión</h3>
-                    <p class="text-gray-600 mb-4">Solicita una sesión sobre un tema específico. Puedes recibir hasta 2 sesiones, más cualquier sesión adicional prestada.</p>
-                    <form id="requestForm" class="space-y-4">
-                        <div>
-                            <label for="requestingStartup" class="block text-gray-700 text-sm font-bold mb-2">Tu Startup:</label>
-                            <select id="requestingStartup" class="select-field" required></select>
-                        </div>
-                        <div>
-                            <label for="requestTopic" class="block text-gray-700 text-sm font-bold mb-2">Tema en el que necesitas ayuda (ej. 'Estrategia de Marketing', 'Asesoramiento Legal'):</label>
-                            <input type="text" id="requestTopic" class="input-field" placeholder="Introduce el tema" required>
-                        </div>
-                        <button type="submit" class="btn-primary">Solicitar Sesión</button>
-                    </form>
-                </div>
-
-                <!-- View & Match Sessions Tab -->
-                <div id="view-match" class="tab-pane hidden">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Ver Todas las Ofertas y Solicitudes de Sesiones</h3>
-
-                    <div class="mb-6">
-                        <label for="filterStartupView" class="block text-gray-700 text-sm font-bold mb-2">Filtrar por Tu Startup:</label>
-                        <select id="filterStartupView" class="select-field"></select>
-                    </div>
-
-                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Ofertas de Sesiones Disponibles</h4>
-                    <div id="availableOffersTable" class="overflow-x-auto mb-6">
-                        <p class="text-gray-600" id="noAvailableOffersMessage">Cargando ofertas...</p>
-                    </div>
-
-                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Reclamar una Sesión Disponible</h4>
-                    <div class="mb-6">
-                        <label for="claimOfferSelect" class="block text-gray-700 text-sm font-bold mb-2">Selecciona una Oferta para Reclamar:</label>
-                        <select id="claimOfferSelect" class="select-field"></select>
-                        <label for="claimingStartup" class="block text-gray-700 text-sm font-bold mb-2 mt-4">Tu Startup (Reclamante):</label>
-                        <select id="claimingStartup" class="select-field"></select>
-                        <button id="claimSessionBtn" class="btn-primary mt-4">Reclamar Sesión Seleccionada</button>
-                    </div>
-
-                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Solicitudes de Sesiones Pendientes</h4>
-                    <div id="pendingRequestsTable" class="overflow-x-auto mb-6">
-                        <p class="text-gray-600" id="noPendingRequestsMessage">Cargando solicitudes...</p>
-                    </div>
-
-                    <h4 class="text-xl font-semibold text-gray-800 mb-3">Historial de Sesiones (Reclamaciones Completadas)</h4>
-                    <div id="sessionHistoryTable" class="overflow-x-auto">
-                        <p class="text-gray-600" id="noSessionHistoryMessage">Cargando historial...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+    </div>
     </div>
 
     <script>
+
         // Base URL para tu backend FastAPI.
-        // Si el frontend es servido por el mismo FastAPI (como en Render),
-        // window.location.origin será la URL base de tu aplicación (ej: https://tudominio.onrender.com).
-        // Las llamadas a la API se construirán como https://tudominio.onrender.com/api/ruta_api
+        // Determina si estamos en desarrollo local o en un despliegue (como Render).
         let BASE_API_URL;
 
-        // Detectar si el archivo HTML se está abriendo directamente desde el sistema de archivos (para desarrollo local)
         if (window.location.protocol === "file:") {
-            BASE_API_URL = "http://localhost:8000/api"; // Para pruebas locales, asumiendo que FastAPI corre en 8000 y sus rutas API están bajo /api
+            // Para pruebas locales, asumiendo que FastAPI corre en 8000 y sus rutas API están bajo /api
+            BASE_API_URL = "http://localhost:8000/api";
             console.warn("Modo de desarrollo local detectado: Las llamadas a la API se dirigirán a http://localhost:8000/api. Asegúrate de que tu backend FastAPI esté ejecutándose allí.");
         } else {
-            BASE_API_URL = window.location.origin + "/api"; // Para despliegue en Render, donde FastAPI sirve el HTML y la API está bajo /api
+            // Para despliegue en Render, donde FastAPI sirve el HTML y la API está bajo /api
+            BASE_API_URL = window.location.origin + "/api";
         }
 
-        let allStartups = [];
+        // Variables globales para almacenar datos y mapeos
+        let allStartups = []; // Almacena todas las startups para la sección de sugerencias
         let startupMap = {}; // Mapea el nombre de la empresa al objeto completo de la startup
         let startupNameToId = {}; // Mapea el nombre de la empresa al ID de string (_id)
+        let allContacts = []; // Almacena todos los contactos para el filtrado
 
+        // Objeto para almacenar los datos combinados del dashboard
         let currentDashboardData = {
             key_statistics: { total_startups: 0 },
             startup_contacts: [],
-            all_startups: [],
-            available_session_offers: [],
-            pending_session_requests: [],
-            session_history: []
+            all_startups: []
+            // Las propiedades relacionadas con sesiones (available_session_offers, etc.)
+            // no se usarán directamente para renderizar, aunque el endpoint /api podría devolverlas.
         };
 
+        // Referencias a elementos del DOM para mensajes y carga
         const messagesDiv = document.getElementById('messages');
         const loadingOverlay = document.getElementById('loadingOverlay');
 
+        /**
+         * Muestra un mensaje de alerta en la parte superior de la página.
+         * @param {string} message - El mensaje a mostrar.
+         * @param {string} type - Tipo de alerta (ej. 'success', 'error', 'warning').
+         */
         function showMessage(message, type = 'success') {
             const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type}`;
+            alertDiv.className = `alert alert-${type}`; // Clases CSS para estilo
             alertDiv.textContent = message;
             messagesDiv.innerHTML = ''; // Limpiar mensajes anteriores
             messagesDiv.appendChild(alertDiv);
-            // El CSS maneja la animación de aparición
+            // Eliminar el mensaje después de 5 segundos
             setTimeout(() => {
                 alertDiv.remove();
-            }, 5000); // Eliminar después de 5 segundos
+            }, 5000);
         }
 
+        /** Muestra la superposición de carga. */
         function showLoading() {
             if (loadingOverlay) loadingOverlay.classList.add('active');
         }
 
+        /** Oculta la superposición de carga. */
         function hideLoading() {
             if (loadingOverlay) loadingOverlay.classList.remove('active');
         }
 
-        // Helper para obtener datos de la API
-        async function fetchData(path) { // 'path' será como "" (para /api), "/startups", "/session-offers", etc.
+        /**
+         * Helper para obtener datos de la API.
+         * @param {string} path - La ruta del endpoint de la API (ej. "/startups").
+         * @returns {Promise<Object|null>} Los datos de la respuesta JSON o null si hay un error.
+         */
+        async function fetchData(path) {
             showLoading();
             try {
                 const response = await fetch(`${BASE_API_URL}${path}`);
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.detail || `Error HTTP! estado: ${response.status}`);
+                    throw new Error(errorData.detail || `Error HTTP! Estado: ${response.status}`);
                 }
                 const data = await response.json();
-                console.log("Datos recibidos del backend:", data); // Log para depuración
+                console.log("Datos recibidos del backend:", data); // Para depuración
                 return data;
             } catch (error) {
                 console.error("Error de fetch:", error);
@@ -477,8 +514,9 @@
             }
         }
 
-        // Helper para enviar datos a la API
-        async function postData(path, data) { // 'path' será como "/session-offers", "/session-offers/{id}/claim", etc.
+        // La función `postData` se mantiene, aunque actualmente no hay formularios que la utilicen,
+        // por si se necesita para futuras funcionalidades.
+        async function postData(path, data) {
             showLoading();
             try {
                 const response = await fetch(`${BASE_API_URL}${path}`, {
@@ -490,7 +528,7 @@
                 });
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.detail || `Error HTTP! estado: ${response.status}`);
+                    throw new Error(errorData.detail || `Error HTTP! Estado: ${response.status}`);
                 }
                 return await response.json();
             } catch (error) {
@@ -504,6 +542,10 @@
 
         // --- Funciones de Renderizado de Datos ---
 
+        /**
+         * Renderiza las estadísticas clave en el dashboard.
+         * @param {Object} data - Objeto con estadísticas (ej. { total_startups: 10 }).
+         */
         function renderKeyStatistics(data) {
             const totalStartupsEl = document.getElementById('totalStartups');
             if (totalStartupsEl) {
@@ -511,185 +553,85 @@
             }
         }
 
-        function renderContactsTable(contacts) {
-            const contactsTableDiv = document.getElementById('contactsTable');
-            if (!contactsTableDiv) return;
+        /**
+         * Renderiza la tabla de contactos de startups.
+         * @param {Array<Object>} contactsToRender - Array de objetos de contacto a mostrar.
+         */
+        function renderContactsTable(contactsToRender) {
+            const tableDiv = document.getElementById('contactsTable');
+            if (!tableDiv) return;
 
-            contactsTableDiv.innerHTML = ''; // Limpiar mensaje de carga
-
-            if (contacts && contacts.length > 0) {
-                let tableHTML = `
-                    <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Empresa</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacto</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Sector</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                `;
-                contacts.forEach(contact => {
-                    tableHTML += `
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${contact.company || 'N/A'}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${contact.contact || 'N/A'}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${contact.email || 'N/A'}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${contact.sector || 'N/A'}</td>
-                        </tr>
-                    `;
-                });
-                tableHTML += `</tbody></table>`;
-                contactsTableDiv.innerHTML = tableHTML;
-            } else {
-                contactsTableDiv.innerHTML = '<p class="text-gray-600">No hay contactos disponibles aún.</p>';
-            }
+            // Genera el HTML de la tabla o un mensaje si no hay contactos
+            tableDiv.innerHTML = contactsToRender.length ? `
+        <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Empresa</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sector</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contacto</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Email</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                ${contactsToRender.map(c => `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${c.company || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${c.sector || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${c.contact || 'N/A'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${c.email || 'N/A'}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    ` : '<p class="text-gray-600 p-4 text-center">No se encontraron contactos.</p>';
         }
 
+        /** Filtra los contactos basados en la entrada de búsqueda y re-renderiza la tabla. */
+        function filterContacts() {
+            const searchInput = document.getElementById('contactSearchInput');
+            const search = searchInput ? searchInput.value.toLowerCase() : '';
+
+            const filtered = allContacts.filter(c =>
+            (c.company?.toLowerCase().includes(search) ||
+                c.sector?.toLowerCase().includes(search) ||
+                c.contact?.toLowerCase().includes(search) ||
+                c.email?.toLowerCase().includes(search))
+            );
+            renderContactsTable(filtered);
+        }
+
+        // Las funciones de renderizado de ofertas y solicitudes de sesión se mantienen pero
+        // incluyen comprobaciones `if (!element) return;` para evitar errores si el HTML no está presente.
         function renderAvailableOffersTable(offers) {
             const availableOffersTableDiv = document.getElementById('availableOffersTable');
             const claimOfferSelect = document.getElementById('claimOfferSelect');
-            if (!availableOffersTableDiv || !claimOfferSelect) return;
-
-            availableOffersTableDiv.innerHTML = '';
-            claimOfferSelect.innerHTML = '<option value="">-- Selecciona una oferta --</option>';
-
-            const filterStartupViewEl = document.getElementById('filterStartupView');
-            const filterId = filterStartupViewEl && filterStartupViewEl.value !== "All Startups" ? startupNameToId[filterStartupViewEl.value] : null;
-
-            const filteredOffers = offers ? offers.filter(offer => {
-                // Mostrar ofertas NO hechas por la startup seleccionada, ya que no pueden reclamar las suyas propias
-                return !filterId || offer.offering_startup_id !== filterId;
-            }) : [];
-
-            if (filteredOffers.length > 0) {
-                let tableHTML = `
-                    <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Startup que Ofrece</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tema</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Fecha/Hora</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                `;
-                filteredOffers.forEach(offer => {
-                    const timestamp = new Date(offer.timestamp).toLocaleString();
-                    tableHTML += `
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${offer.offering_startup_name}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${offer.topic}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestamp}</td>
-                        </tr>
-                    `;
-                    // Rellenar el cuadro de selección de reclamación
-                    claimOfferSelect.innerHTML += `<option value="${offer.id}">${offer.offering_startup_name} - ${offer.topic} (Ofrecida el ${timestamp})</option>`;
-                });
-                tableHTML += `</tbody></table>`;
-                availableOffersTableDiv.innerHTML = tableHTML;
-            } else {
-                availableOffersTableDiv.innerHTML = '<p class="text-gray-600">No hay ofertas de sesiones disponibles en este momento.</p>';
-                claimOfferSelect.innerHTML = '<option value="">-- No hay ofertas para reclamar --</option>';
-            }
+            if (!availableOffersTableDiv || !claimOfferSelect) return; // Salir si los elementos no existen
+            availableOffersTableDiv.innerHTML = '<p class="text-gray-600">No hay ofertas de sesiones disponibles en este momento.</p>';
+            claimOfferSelect.innerHTML = '<option value="">-- No hay ofertas para reclamar --</option>';
         }
 
         function renderPendingRequestsTable(requests) {
             const pendingRequestsTableDiv = document.getElementById('pendingRequestsTable');
-            if (!pendingRequestsTableDiv) return;
-
-            pendingRequestsTableDiv.innerHTML = '';
-
-            const filterStartupViewEl = document.getElementById('filterStartupView');
-            const filterId = filterStartupViewEl && filterStartupViewEl.value !== "All Startups" ? startupNameToId[filterStartupViewEl.value] : null;
-
-            const filteredRequests = requests ? requests.filter(req => {
-                // Mostrar solicitudes hechas por la startup seleccionada
-                return !filterId || req.requesting_startup_id === filterId;
-            }) : [];
-
-            if (filteredRequests.length > 0) {
-                let tableHTML = `
-                    <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Startup Solicitante</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tema</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Fecha/Hora</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                `;
-                filteredRequests.forEach(req => {
-                    const timestamp = new Date(req.timestamp).toLocaleString();
-                    tableHTML += `
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${req.requesting_startup_name}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${req.topic}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestamp}</td>
-                        </tr>
-                    `;
-                });
-                tableHTML += `</tbody></table>`;
-                pendingRequestsTableDiv.innerHTML = tableHTML;
-            } else {
-                pendingRequestsTableDiv.innerHTML = '<p class="text-gray-600">No hay solicitudes de sesiones pendientes en este momento.</p>';
-            }
+            if (!pendingRequestsTableDiv) return; // Salir si el elemento no existe
+            pendingRequestsTableDiv.innerHTML = '<p class="text-gray-600">No hay solicitudes de sesiones pendientes en este momento.</p>';
         }
 
         function renderSessionHistoryTable(history) {
             const sessionHistoryTableDiv = document.getElementById('sessionHistoryTable');
-            if (!sessionHistoryTableDiv) return;
-
-            sessionHistoryTableDiv.innerHTML = '';
-
-            const filterStartupViewEl = document.getElementById('filterStartupView');
-            const filterId = filterStartupViewEl && filterStartupViewEl.value !== "All Startups" ? startupNameToId[filterStartupViewEl.value] : null;
-
-            const filteredHistory = history ? history.filter(sess => {
-                // Mostrar sesiones donde la startup seleccionada fue la que ofreció o la que reclamó
-                return !filterId || sess.offering_startup_id === filterId || sess.claiming_startup_id === filterId;
-            }) : [];
-
-            if (filteredHistory.length > 0) {
-                let tableHTML = `
-                    <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tl-lg">Startup que Ofrece</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Startup Reclamante</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tema</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider rounded-tr-lg">Fecha/Hora</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                `;
-                filteredHistory.forEach(sess => {
-                    const timestamp = new Date(sess.timestamp).toLocaleString();
-                    tableHTML += `
-                        <tr>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${sess.offering_startup_name}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${sess.claiming_startup_name}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${sess.topic}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timestamp}</td>
-                        </tr>
-                    `;
-                });
-                tableHTML += `</tbody></table>`;
-                sessionHistoryTableDiv.innerHTML = tableHTML;
-            } else {
-                sessionHistoryTableDiv.innerHTML = '<p class="text-gray-600">No hay reclamaciones de sesiones completadas aún.</p>';
-            }
+            if (!sessionHistoryTableDiv) return; // Salir si el elemento no existe
+            sessionHistoryTableDiv.innerHTML = '<p class="text-gray-600">No hay reclamaciones de sesiones completadas aún.</p>';
         }
 
         // --- Funciones de Población de UI ---
 
+        /**
+         * Rellena los selects de startups y actualiza los mapeos globales.
+         * @param {Array<Object>} startupsData - Array de objetos de startups.
+         */
         function populateStartupSelects(startupsData) {
-            allStartups = startupsData; // Actualizar allStartups global
+            allStartups = startupsData;
             startupMap = {};
             startupNameToId = {};
-            console.log("All Startups Data for Suggestions:", allStartups); // Added log
             allStartups.forEach(s => {
                 if (s.company) {
                     startupMap[s.company] = s;
@@ -697,27 +639,24 @@
                 }
             });
 
+            // Solo se rellenan los selects que quedan en el dashboard
             const startupSelects = [
                 document.getElementById('selectStartupSuggestions'),
-                document.getElementById('offeringStartup'),
-                document.getElementById('requestingStartup'),
-                document.getElementById('claimingStartup'),
                 document.getElementById('filterStartupView')
             ];
 
             startupSelects.forEach(selectElement => {
-                if (!selectElement) return; // Add null check for select element
+                if (!selectElement) return;
 
-                const currentSelectedValue = selectElement.value; // Preservar la selección actual si existe
+                const currentSelectedValue = selectElement.value;
                 selectElement.innerHTML = ''; // Limpiar opciones existentes
-                
-                // Add default "select" option for suggestion dropdown, and "All Startups" for filter dropdown
+
+                // Añadir opciones por defecto
                 if (selectElement.id === 'selectStartupSuggestions') {
                     selectElement.innerHTML += '<option value="">-- Selecciona una startup --</option>';
                 } else if (selectElement.id === 'filterStartupView') {
                     selectElement.innerHTML += '<option value="All Startups">Todas las Startups</option>';
                 }
-
 
                 allStartups.forEach(startup => {
                     if (startup.company) {
@@ -727,116 +666,90 @@
                         selectElement.appendChild(option);
                     }
                 });
-                // Restaurar la selección o establecer el valor predeterminado
+
+                // Restaurar la selección o establecer valor por defecto
                 if (currentSelectedValue && Array.from(selectElement.options).some(opt => opt.value === currentSelectedValue)) {
                     selectElement.value = currentSelectedValue;
-                } else if (allStartups.length > 0 && selectElement.id !== 'filterStartupView' && selectElement.id !== 'selectStartupSuggestions') {
-                    // For offering, requesting, claiming, default to first startup if no previous selection
-                    selectElement.value = allStartups[0].company;
                 } else if (selectElement.id === 'filterStartupView') {
-                    selectElement.value = 'All Startups'; // Ensure "All Startups" is selected by default
+                    selectElement.value = 'All Startups';
                 } else if (selectElement.id === 'selectStartupSuggestions') {
-                    selectElement.value = ''; // Ensure default "select a startup" is shown
+                    selectElement.value = '';
                 }
             });
 
-            // Disparar el evento 'change' para el select de sugerencias para cargar las sugerencias iniciales
+            // Disparar eventos 'change' para cargar sugerencias y filtros iniciales
             const selectStartupSuggestionsEl = document.getElementById('selectStartupSuggestions');
-            // Only trigger change if a valid startup is already selected (not the default empty option)
             if (selectStartupSuggestionsEl && selectStartupSuggestionsEl.value && selectStartupSuggestionsEl.value !== "") {
                 selectStartupSuggestionsEl.dispatchEvent(new Event('change'));
             }
-            
-            // Disparar el evento 'change' para el select de filtro para cargar las tablas filtradas iniciales
+
             const filterStartupViewEl = document.getElementById('filterStartupView');
             if (filterStartupViewEl) {
                 filterStartupViewEl.dispatchEvent(new Event('change'));
             }
         }
 
+        /**
+         * Actualiza las sugerencias de conexión basadas en la startup seleccionada.
+         */
         function updateSuggestedConnections() {
             const selectStartupSuggestionsEl = document.getElementById('selectStartupSuggestions');
-            if (!selectStartupSuggestionsEl) return; // Ensure element exists
+            if (!selectStartupSuggestionsEl) return;
 
             const selectedName = selectStartupSuggestionsEl.value;
-            console.log("Selected Startup Name for Suggestions:", selectedName);
             const selectedStartupData = startupMap[selectedName];
-            console.log("Selected Startup Data for Suggestions:", selectedStartupData);
 
             const similarStartupsDiv = document.getElementById('similarStartups');
             const noSuggestionsMessage = document.getElementById('noSuggestionsMessage');
-            const sessionStatusDiv = document.getElementById('sessionStatus');
 
-            if (similarStartupsDiv) similarStartupsDiv.innerHTML = ''; // Limpiar sugerencias anteriores
-            if (noSuggestionsMessage) noSuggestionsMessage.classList.add('hidden'); // Ocultar mensaje predeterminado inicialmente
-            if (sessionStatusDiv) sessionStatusDiv.classList.add('hidden'); // Ocultar estado de sesión inicialmente
+            if (similarStartupsDiv) similarStartupsDiv.innerHTML = '';
+            if (noSuggestionsMessage) noSuggestionsMessage.classList.add('hidden');
 
-            if (!selectedStartupData || selectedName === "") { // Added check for empty string selection
+            if (!selectedStartupData || selectedName === "") {
                 if (noSuggestionsMessage) {
                     noSuggestionsMessage.classList.remove('hidden');
                     noSuggestionsMessage.textContent = "Por favor, selecciona una startup para ver sugerencias.";
                 }
-                console.log("No selected startup data found or empty selection.");
                 return;
             }
 
-            // Mostrar estado de la sesión
-            if (sessionStatusDiv) {
-                sessionStatusDiv.classList.remove('hidden');
-                const sessionsAllottedEl = document.getElementById('sessionsAllotted');
-                const sessionsReceivedEl = document.getElementById('sessionsReceived');
-                const sessionsLentEl = document.getElementById('sessionsLent');
+            // No se muestra el estado de la sesión, ya que esa funcionalidad ha sido eliminada.
 
-                if (sessionsAllottedEl) sessionsAllottedEl.textContent = selectedStartupData.sessions_allotted_to_receive;
-                if (sessionsReceivedEl) sessionsReceivedEl.textContent = selectedStartupData.sessions_received;
-                if (sessionsLentEl) sessionsLentEl.textContent = selectedStartupData.sessions_lent;
-            }
-
-            const sector = selectedStartupData.sector;
-            const stage = selectedStartupData.stage;
-            console.log("Selected Startup Sector:", sector, "Stage:", stage);
+            const sector = selectedStartupData.sector || '';
+            const stage = selectedStartupData.stage || '';
 
             const suggestions = allStartups.filter(s => {
                 const isSameId = s.id === selectedStartupData.id;
-                // Modificado: Asegurar que los valores sean cadenas no vacías para la comparación
                 const sSector = s.sector || '';
                 const sStage = s.stage || '';
-                const selectedSector = sector || '';
-                const selectedStage = stage || '';
 
-                const isSimilarSector = sSector === selectedSector && selectedSector !== '';
-                const isSimilarStage = sStage === selectedStage && selectedStage !== '';
-                
-                // Log each startup being considered for filtering
-                console.log(`Checking startup ${s.company || 'N/A'}: ID=${s.id || 'N/A'}, Sector='${sSector}', Stage='${sStage}'`);
-                console.log(`  isSameId: ${isSameId}, isSimilarSector: ${isSimilarSector}, isSimilarStage: ${isSimilarStage}`);
+                const isSimilarSector = sSector === sector && sector !== '';
+                const isSimilarStage = sStage === stage && stage !== '';
 
                 return !isSameId && (isSimilarSector || isSimilarStage);
             });
-            console.log("Filtered Suggestions (before top 5):", suggestions);
 
             const top5 = suggestions.slice(0, 5);
-            console.log("Top 5 Suggestions:", top5);
 
             if (top5.length > 0) {
                 top5.forEach(s => {
                     const expander = document.createElement('div');
-                    expander.className = 'card mb-2 p-4'; // Usar estilo de tarjeta para el expander
+                    expander.className = 'card mb-2 p-4';
                     expander.innerHTML = `
-                        <div class="expander-header">
-                            <span><strong>${s.company || 'Startup'}</strong> - Sector: ${s.sector || 'N/A'} | Etapa: ${s.stage || 'N/A'}</span>
-                            <span><i class="fas fa-chevron-down"></i></span> <!-- Flecha hacia abajo -->
-                        </div>
-                        <div class="expander-content">
-                            <p><strong>Descripción:</strong> ${s.description || 'N/A'}</p>
-                            ${s.website ? `<p><strong>Sitio Web:</strong> <a href="${s.website.startsWith('http') ? s.website : 'https://' + s.website}" target="_blank" class="text-indigo-600 hover:underline">${s.website}</a></p>` : ''}
-                            <p><strong>Correo Electrónico de Contacto:</strong> ${s.email || 'N/A'}</p>
-                        </div>
-                    `;
+                <div class="expander-header">
+                    <span><strong>${s.company || 'Startup'}</strong> - Sector: ${s.sector || 'N/A'} | Etapa: ${s.stage || 'N/A'}</span>
+                    <span><i class="fas fa-chevron-down"></i></span>
+                </div>
+                <div class="expander-content">
+                    <p><strong>Descripción:</strong> ${s.description || 'N/A'}</p>
+                    ${s.website ? `<p><strong>Sitio Web:</strong> <a href="${s.website.startsWith('http') ? s.website : 'https://' + s.website}" target="_blank" class="text-indigo-600 hover:underline">${s.website}</a></p>` : ''}
+                    <p><strong>Correo Electrónico de Contacto:</strong> ${s.email || 'N/A'}</p>
+                </div>
+            `;
                     expander.querySelector('.expander-header').addEventListener('click', () => {
                         const content = expander.querySelector('.expander-content');
                         const icon = expander.querySelector('.expander-header i');
-                        if (content) content.classList.toggle('active'); // Activar/desactivar la clase 'active'
+                        if (content) content.classList.toggle('active');
                         if (icon) {
                             if (content && content.classList.contains('active')) {
                                 icon.classList.remove('fa-chevron-down');
@@ -854,143 +767,60 @@
                     noSuggestionsMessage.classList.remove('hidden');
                     noSuggestionsMessage.textContent = "No se encontraron sugerencias para esta startup basadas en el sector o la etapa.";
                 }
-                console.log("No suggestions found based on filter criteria.");
             }
         }
 
-        // --- Manejadores de Envío de Formularios ---
-
-        document.getElementById('offerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const offeringStartupName = document.getElementById('offeringStartup').value;
-            const offerTopic = document.getElementById('offerTopic').value;
-            const offeringStartupId = startupNameToId[offeringStartupName];
-
-            if (!offeringStartupId) {
-                showMessage("Startup seleccionada no encontrada.", 'error');
-                return;
-            }
-
-            const payload = {
-                offering_startup_id: offeringStartupId,
-                offering_startup_name: offeringStartupName,
-                topic: offerTopic
-            };
-
-            const result = await postData("/session-offers", payload); 
-            if (result) {
-                showMessage(`¡Sesión sobre '${offerTopic}' ofrecida por ${offeringStartupName} con éxito!`);
-                document.getElementById('offerTopic').value = ''; // Limpiar formulario
-                await initApp(); // Recargar todos los datos del panel
-            }
-        });
-
-        document.getElementById('requestForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const requestingStartupName = document.getElementById('requestingStartup').value;
-            const requestTopic = document.getElementById('requestTopic').value;
-            const requestingStartupId = startupNameToId[requestingStartupName];
-
-            if (!requestingStartupId) {
-                showMessage("Startup seleccionada no encontrada.", 'error');
-                return;
-            }
-
-            const payload = {
-                requesting_startup_id: requestingStartupId,
-                requesting_startup_name: requestingStartupName,
-                topic: requestTopic
-            };
-
-            const result = await postData("/session-requests", payload); 
-            if (result) {
-                showMessage(`¡Sesión sobre '${requestTopic}' solicitada por ${requestingStartupName} con éxito!`);
-                document.getElementById('requestTopic').value = ''; // Limpiar formulario
-                await initApp(); // Recargar todos los datos del panel
-            }
-        });
-
-        document.getElementById('claimSessionBtn').addEventListener('click', async () => {
-            const selectedOfferId = document.getElementById('claimOfferSelect').value;
-            const claimingStartupName = document.getElementById('claimingStartup').value;
-            const claimingStartupId = startupNameToId[claimingStartupName];
-
-            if (!selectedOfferId) {
-                showMessage("Por favor, selecciona una oferta para reclamar.", 'warning');
-                return;
-            }
-            if (!claimingStartupId) {
-                showMessage("Por favor, selecciona tu startup reclamante.", 'warning');
-                return;
-            }
-
-            const payload = {
-                claiming_startup_id: claimingStartupId,
-                claiming_startup_name: claimingStartupName
-            };
-
-            const result = await postData(`/session-offers/${selectedOfferId}/claim`, payload); 
-            if (result) {
-                // Find the offering startup name from currentDashboardData.available_session_offers
-                const claimedOffer = currentDashboardData.available_session_offers.find(offer => offer.id === selectedOfferId);
-                const offeringStartupName = claimedOffer ? claimedOffer.offering_startup_name : 'desconocida';
-                showMessage(`¡Sesión de ${offeringStartupName} reclamada por ${claimingStartupName} con éxito!`);
-                await initApp(); // Recargar todos los datos del panel
-            }
-        });
-
-        // --- Lógica de Cambio de Pestañas ---
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', () => {
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-
-                document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.add('hidden'));
-                document.getElementById(button.dataset.tab).classList.remove('hidden');
-
-                // Volver a renderizar las tablas para la pestaña de ver/emparejar según el filtro actual
-                if (button.dataset.tab === 'view-match') {
-                    renderAvailableOffersTable(currentDashboardData.available_session_offers);
-                    renderPendingRequestsTable(currentDashboardData.pending_session_requests);
-                    renderSessionHistoryTable(currentDashboardData.session_history);
-                }
-            });
-        });
-
         // --- Escuchadores de Eventos ---
+
+        // Listener para el selector de sugerencias de startups
         const selectStartupSuggestionsEl = document.getElementById('selectStartupSuggestions');
         if (selectStartupSuggestionsEl) {
             selectStartupSuggestionsEl.addEventListener('change', updateSuggestedConnections);
         }
+
+        // Listener para el input de búsqueda de contactos
+        const contactSearchInputEl = document.getElementById('contactSearchInput');
+        if (contactSearchInputEl) {
+            contactSearchInputEl.addEventListener('input', filterContacts);
+        }
+
+        // Listener para el filtro de vista de startups (si es necesario para futuras funcionalidades)
         const filterStartupViewEl = document.getElementById('filterStartupView');
         if (filterStartupViewEl) {
             filterStartupViewEl.addEventListener('change', () => {
-                renderAvailableOffersTable(currentDashboardData.available_session_offers);
-                renderPendingRequestsTable(currentDashboardData.pending_session_requests);
-                renderSessionHistoryTable(currentDashboardData.session_history);
+                // Por ahora, este listener no tiene un efecto visible directo en el UI,
+                // ya que las tablas de sesiones fueron eliminadas. Podría usarse en el futuro.
+                console.log("Filtro de vista de startup cambiado a:", filterStartupViewEl.value);
             });
         }
 
-
-        // --- Función de Carga Inicial ---
+        // --- Función de Carga Inicial de la Aplicación ---
         async function initApp() {
             // Obtener todos los datos del panel desde el endpoint raíz de la API
-            const data = await fetchData(""); // Ahora el path es "" porque BASE_API_URL ya incluye /api
+            const data = await fetchData("");
             if (data) {
                 currentDashboardData = data; // Almacenar los datos obtenidos globalmente
 
-                // Renderizar todas las secciones usando los datos combinados
+                // ¡IMPORTANTE! Almacena los contactos en la variable global allContacts para el filtrado
+                allContacts = currentDashboardData.startup_contacts;
+
+                // Renderizar las secciones principales del dashboard
                 renderKeyStatistics(currentDashboardData.key_statistics);
-                renderContactsTable(currentDashboardData.startup_contacts);
-                populateStartupSelects(currentDashboardData.all_startups); // Esto también dispara updateSuggestedConnections y el cambio de filterStartupView
+                renderContactsTable(allContacts); // Renderiza la tabla inicial con todos los contactos
+                populateStartupSelects(currentDashboardData.all_startups);
+
+                // Llamadas seguras a funciones de renderizado de sesiones.
+                // No harán nada si los elementos HTML asociados no existen.
                 renderAvailableOffersTable(currentDashboardData.available_session_offers);
                 renderPendingRequestsTable(currentDashboardData.pending_session_requests);
                 renderSessionHistoryTable(currentDashboardData.session_history);
             }
         }
 
+        // Asegurarse de que el script se ejecute una vez que la ventana y el DOM estén completamente cargados
         window.onload = initApp;
 
     </script>
 </body>
+
 </html>

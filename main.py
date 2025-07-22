@@ -270,14 +270,18 @@ async def get_startup_by_id(startup_id: str):
 
 @app.get("/api/startups_contacts")
 async def get_startups_contacts():
-    """Retrieve contact information for all startups."""
     contacts = []
     cursor = startups_collection.find(
         {"contact": {"$ne": None, "$ne": ""}},
         {"company": 1, "contact": 1, "email": 1, "sector": 1, "_id": 0}
     )
     for doc in cursor:
-        contacts.append(doc)
+        contacts.append({
+            "company": str(doc.get("company") or ""),
+            "contact": str(doc.get("contact") or ""),
+            "email": str(doc.get("email") or ""),
+            "sector": str(doc.get("sector") or ""),
+        })
     return contacts
 
 @app.get("/api/startups_total")

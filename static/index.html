@@ -9,7 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
@@ -19,12 +19,9 @@
             --title-content: #1f0d1e;
         }
 
-        * {
-            font-family: Helvetica, sans-serif;
-        }
-
         body {
-
+            font-family: Helvetica, Sans-Serif;
+           
             background-color: #f8fafc;
             color: #334155;
             /* Texto más oscuro */
@@ -427,10 +424,10 @@
                 <button class="tab-button" data-tab="solicitar-ofrecer">Solicitar/Ofrecer Sesión</button>
                 <button class="tab-button" data-tab="solicitudes">Solicitudes Pendientes</button>
                 <button class="tab-button" data-tab="historial">Historial de Sesiones</button>
-
+                
             </div>
 
-
+           
 
             <div id="solicitudes" class="tab-content hidden">
                 <h3 class="text-2xl font-semibold mb-4 text-gray-700">Mis Solicitudes de Sesiones Pendientes</h3>
@@ -512,188 +509,188 @@
 
     <script>
 
-        // Base URL para tu backend FastAPI.
-        // Base URL para tu backend FastAPI.
-        let BASE_API_URL;
+       // Base URL para tu backend FastAPI.
+// Base URL para tu backend FastAPI.
+let BASE_API_URL;
 
-        // Determinar la URL base de la API.
-        // Si se abre el HTML directamente desde el sistema de archivos (file://),
-        // asumimos que estamos en desarrollo y apuntamos a localhost.
-        // De lo contrario, usamos el origen del host actual (para despliegues).
-        if (window.location.protocol === "file:") {
-            BASE_API_URL = "http://localhost:8000/api";
-            console.warn("Modo de desarrollo local detectado: Las llamadas a la API se dirigirán a http://localhost:8000/api. Asegúrate de que tu backend FastAPI esté ejecutándose allí.");
-        } else {
-            BASE_API_URL = window.location.origin + "/api";
+// Determinar la URL base de la API.
+// Si se abre el HTML directamente desde el sistema de archivos (file://),
+// asumimos que estamos en desarrollo y apuntamos a localhost.
+// De lo contrario, usamos el origen del host actual (para despliegues).
+if (window.location.protocol === "file:") {
+    BASE_API_URL = "http://localhost:8000/api";
+    console.warn("Modo de desarrollo local detectado: Las llamadas a la API se dirigirán a http://localhost:8000/api. Asegúrate de que tu backend FastAPI esté ejecutándose allí.");
+} else {
+    BASE_API_URL = window.location.origin + "/api";
+}
+
+// Variables globales para almacenar datos y mapeos
+let allStartups = [];
+let startupMap = {};
+let startupNameToId = {};
+let allContacts = [];
+
+// --- DATOS DE EJEMPLO PARA LAS SESIONES (¡MOCK DATA!) ---
+// Estos datos SÓLO se usarán para la sección de "Mercado de Sesiones de Mentoría".
+// Se inyectarán después de intentar obtener los datos del backend real.
+const mockAvailableOffers = [
+    { id: 'offer1', offering_startup: 'TechInnovate', topic: 'Estrategia de Crecimiento en SaaS', details: 'Sesión de 1 hora sobre tácticas de expansión de mercado y adquisición de usuarios para productos SaaS.', mentor: 'Elena G.' },
+    { id: 'offer2', offering_startup: 'GreenSolutions', topic: 'Optimización de Cadena de Suministro Sostenible', details: 'Consejos prácticos para startups de sostenibilidad en la gestión logística y reducción de huella de carbono.', mentor: 'Carlos M.' },
+    { id: 'offer3', offering_startup: 'Artify AI', topic: 'Integración de IA en Contenido Creativo', details: 'Cómo aprovechar herramientas de IA para la generación y mejora de contenido visual y textual de forma innovadora.', mentor: 'Sofia R.' },
+    { id: 'offer4', offering_startup: 'EduStream', topic: 'Desarrollo de Curriculums para EdTech', details: 'Guía sobre cómo diseñar experiencias de aprendizaje atractivas y efectivas para plataformas educativas online.', mentor: 'David L.' },
+    { id: 'offer5', offering_startup: 'FoodieApp', topic: 'Marketing Digital para Apps Móviles', details: 'Sesión sobre estrategias efectivas de adquisición y retención de usuarios para aplicaciones móviles.', mentor: 'Juan P.' }
+];
+
+const mockPendingRequests = [
+    { id: 'req1', requesting_startup: 'MediCare+', topic: 'Navegación Regulatoria en Salud Digital', details: 'Necesitamos orientación sobre las últimas normativas y certificaciones para apps de salud digital en Europa.', status: 'Pendiente' },
+    { id: 'req2', requesting_startup: 'FinFlow', topic: 'Seguridad en Transacciones FinTech', details: 'Buscamos asesoría sobre protocolos de seguridad y cumplimiento normativo en plataformas de servicios financieros.', status: 'En Revisión' },
+    { id: 'req3', requesting_startup: 'BizDev Consult', topic: 'Expansión a Nuevos Mercados', details: 'Solicitamos mentoría sobre estrategias de entrada a mercados internacionales para empresas de consultoría.', status: 'Pendiente' }
+];
+
+const mockSessionHistory = [
+    { id: 'hist1', startup1: 'FoodieApp', startup2: 'BizDev Consult', topic: 'Estrategias de Entrada al Mercado', date: '2024-06-15', status: 'Completada' },
+    { id: 'hist2', startup1: 'FinFlow', startup2: 'LegalTech Solutions', topic: 'Asesoría Legal FinTech', date: '2024-05-20', status: 'Completada' },
+    { id: 'hist3', startup1: 'MediCare+', startup2: 'Wellness AI', topic: 'Integración de IA en Salud', date: '2024-04-10', status: 'Completada' },
+    { id: 'hist4', startup1: 'TechInnovate', startup2: 'EduStream', topic: 'Desarrollo de Producto Ágil', date: '2024-03-25', status: 'Completada' }
+];
+
+// currentDashboardData se inicializará con lo que venga de fetchData
+let currentDashboardData = {};
+
+const messagesDiv = document.getElementById('messages');
+const loadingOverlay = document.getElementById('loadingOverlay');
+
+/**
+ * Muestra un mensaje de alerta en la parte superior de la página.
+ * @param {string} message - El mensaje a mostrar.
+ * @param {string} type - Tipo de alerta (ej. 'success', 'error', 'warning').
+ */
+function showMessage(message, type = 'success') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type}`; // Clases CSS para estilo
+    alertDiv.textContent = message;
+    messagesDiv.innerHTML = ''; // Limpiar mensajes anteriores
+    messagesDiv.appendChild(alertDiv);
+    // Eliminar el mensaje después de 5 segundos
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+
+/** Muestra la superposición de carga. */
+function showLoading() {
+    if (loadingOverlay) loadingOverlay.classList.add('active');
+}
+
+/** Oculta la superposición de carga. */
+function hideLoading() {
+    if (loadingOverlay) loadingOverlay.classList.remove('active');
+}
+
+/**
+ * Helper para obtener datos de la API.
+ * Ahora intentará obtener datos de la API real. Si es el endpoint raíz (""),
+ * fusionará los mocks de sesión con los datos obtenidos.
+ * @param {string} path - La ruta del endpoint de la API (ej. "/startups").
+ * @returns {Promise<Object|null>} Los datos de la respuesta JSON o null si hay un error.
+ */
+async function fetchData(path) {
+    showLoading();
+    try {
+        const response = await fetch(`${BASE_API_URL}${path}`);
+        if (!response.ok) {
+            // Si la respuesta no es OK, intenta leer el error del cuerpo
+            const errorData = await response.json().catch(() => ({ detail: `Error HTTP! Estado: ${response.status}` }));
+            throw new Error(errorData.detail || `Error HTTP! Estado: ${response.status}`);
+        }
+        let data = await response.json();
+        console.log(`Datos recibidos de ${BASE_API_URL}${path}:`, data);
+
+        // --- LÓGICA CLAVE PARA FUSIONAR MOCKS DE SESIÓN EN EL ENDPOINT RAÍZ ---
+        if (path === "") {
+            // Aseguramos que las propiedades de sesión existan, si no vienen del backend.
+            // Esto permite que el backend real pueda enviar sus propios datos de sesión,
+            // pero si no lo hace, usamos los mocks.
+            data.available_session_offers = data.available_session_offers || mockAvailableOffers;
+            data.pending_session_requests = data.pending_session_requests || mockPendingRequests;
+            data.session_history = data.session_history || mockSessionHistory;
+            console.log("Datos de dashboard final (con mocks de sesión inyectados si es necesario):", data);
         }
 
-        // Variables globales para almacenar datos y mapeos
-        let allStartups = [];
-        let startupMap = {};
-        let startupNameToId = {};
-        let allContacts = [];
+        return data;
 
-        // --- DATOS DE EJEMPLO PARA LAS SESIONES (¡MOCK DATA!) ---
-        // Estos datos SÓLO se usarán para la sección de "Mercado de Sesiones de Mentoría".
-        // Se inyectarán después de intentar obtener los datos del backend real.
-        const mockAvailableOffers = [
-            { id: 'offer1', offering_startup: 'TechInnovate', topic: 'Estrategia de Crecimiento en SaaS', details: 'Sesión de 1 hora sobre tácticas de expansión de mercado y adquisición de usuarios para productos SaaS.', mentor: 'Elena G.' },
-            { id: 'offer2', offering_startup: 'GreenSolutions', topic: 'Optimización de Cadena de Suministro Sostenible', details: 'Consejos prácticos para startups de sostenibilidad en la gestión logística y reducción de huella de carbono.', mentor: 'Carlos M.' },
-            { id: 'offer3', offering_startup: 'Artify AI', topic: 'Integración de IA en Contenido Creativo', details: 'Cómo aprovechar herramientas de IA para la generación y mejora de contenido visual y textual de forma innovadora.', mentor: 'Sofia R.' },
-            { id: 'offer4', offering_startup: 'EduStream', topic: 'Desarrollo de Curriculums para EdTech', details: 'Guía sobre cómo diseñar experiencias de aprendizaje atractivas y efectivas para plataformas educativas online.', mentor: 'David L.' },
-            { id: 'offer5', offering_startup: 'FoodieApp', topic: 'Marketing Digital para Apps Móviles', details: 'Sesión sobre estrategias efectivas de adquisición y retención de usuarios para aplicaciones móviles.', mentor: 'Juan P.' }
-        ];
+    } catch (error) {
+        console.error("Error de fetch:", error);
+        showMessage(`Error al cargar datos: ${error.message}. Asegúrate de que tu backend esté corriendo en ${BASE_API_URL}`, 'error');
 
-        const mockPendingRequests = [
-            { id: 'req1', requesting_startup: 'MediCare+', topic: 'Navegación Regulatoria en Salud Digital', details: 'Necesitamos orientación sobre las últimas normativas y certificaciones para apps de salud digital en Europa.', status: 'Pendiente' },
-            { id: 'req2', requesting_startup: 'FinFlow', topic: 'Seguridad en Transacciones FinTech', details: 'Buscamos asesoría sobre protocolos de seguridad y cumplimiento normativo en plataformas de servicios financieros.', status: 'En Revisión' },
-            { id: 'req3', requesting_startup: 'BizDev Consult', topic: 'Expansión a Nuevos Mercados', details: 'Solicitamos mentoría sobre estrategias de entrada a mercados internacionales para empresas de consultoría.', status: 'Pendiente' }
-        ];
-
-        const mockSessionHistory = [
-            { id: 'hist1', startup1: 'FoodieApp', startup2: 'BizDev Consult', topic: 'Estrategias de Entrada al Mercado', date: '2024-06-15', status: 'Completada' },
-            { id: 'hist2', startup1: 'FinFlow', startup2: 'LegalTech Solutions', topic: 'Asesoría Legal FinTech', date: '2024-05-20', status: 'Completada' },
-            { id: 'hist3', startup1: 'MediCare+', startup2: 'Wellness AI', topic: 'Integración de IA en Salud', date: '2024-04-10', status: 'Completada' },
-            { id: 'hist4', startup1: 'TechInnovate', startup2: 'EduStream', topic: 'Desarrollo de Producto Ágil', date: '2024-03-25', status: 'Completada' }
-        ];
-
-        // currentDashboardData se inicializará con lo que venga de fetchData
-        let currentDashboardData = {};
-
-        const messagesDiv = document.getElementById('messages');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-
-        /**
-         * Muestra un mensaje de alerta en la parte superior de la página.
-         * @param {string} message - El mensaje a mostrar.
-         * @param {string} type - Tipo de alerta (ej. 'success', 'error', 'warning').
-         */
-        function showMessage(message, type = 'success') {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `alert alert-${type}`; // Clases CSS para estilo
-            alertDiv.textContent = message;
-            messagesDiv.innerHTML = ''; // Limpiar mensajes anteriores
-            messagesDiv.appendChild(alertDiv);
-            // Eliminar el mensaje después de 5 segundos
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 5000);
+        // --- fallback a mockData para el dashboard principal si la API falla ---
+        // Este bloque solo se activa si fetchData("") falla COMPLETAMENTE.
+        if (path === "") {
+            console.warn("Falló la conexión con la API para el dashboard principal. Usando datos mock completos como fallback.");
+            return {
+                key_statistics: { total_startups: 10 },
+                startup_contacts: [
+                    { company: 'TechInnovate (Mock)', contact: 'Juan Pérez', email: 'juan@tech.com', sector: 'Tecnología' },
+                    { company: 'GreenSolutions (Mock)', contact: 'Ana López', email: 'ana@green.com', sector: 'Sostenibilidad' },
+                    { company: 'Artify AI (Mock)', contact: 'Pedro Gómez', email: 'pedro@artify.ai', sector: 'IA & Arte' },
+                    { company: 'MediCare+ (Mock)', contact: 'Laura Ruiz', email: 'laura@medicare.com', sector: 'Salud Digital' },
+                    { company: 'EduStream (Mock)', contact: 'Miguel Torres', email: 'miguel@edustream.com', sector: 'EdTech' }
+                ],
+                all_startups: [
+                    { id: 's1', company: 'TechInnovate (Mock)', sector: 'Tecnología', stage: 'Semilla', description: 'Plataforma innovadora para desarrollo de software.', website: 'https://techinnovate.com', email: 'info@techinnovate.com' },
+                    { id: 's2', company: 'GreenSolutions (Mock)', sector: 'Sostenibilidad', stage: 'Crecimiento', description: 'Desarrollo de soluciones eco-amigables.', website: 'https://greensolutions.co', email: 'contact@greensolutions.co' },
+                    { id: 's3', company: 'Artify AI (Mock)', sector: 'IA & Arte', stage: 'Semilla', description: 'Generación de arte con inteligencia artificial.', website: 'https://artify.ai', email: 'hello@artify.ai' },
+                    { id: 's4', company: 'MediCare+ (Mock)', sector: 'Salud Digital', stage: 'Crecimiento', description: 'App para gestión de citas médicas y telemedicina.', website: 'https://medicareplus.app', email: 'support@medicareplus.app' },
+                    { id: 's5', company: 'EduStream (Mock)', sector: 'EdTech', stage: 'Semilla', description: 'Plataforma de streaming educativo interactivo.', website: 'https://edustream.com', email: 'help@edustream.com' }
+                ],
+                available_session_offers: mockAvailableOffers,
+                pending_session_requests: mockPendingRequests,
+                session_history: mockSessionHistory
+            };
         }
-
-        /** Muestra la superposición de carga. */
-        function showLoading() {
-            if (loadingOverlay) loadingOverlay.classList.add('active');
-        }
-
-        /** Oculta la superposición de carga. */
-        function hideLoading() {
-            if (loadingOverlay) loadingOverlay.classList.remove('active');
-        }
-
-        /**
-         * Helper para obtener datos de la API.
-         * Ahora intentará obtener datos de la API real. Si es el endpoint raíz (""),
-         * fusionará los mocks de sesión con los datos obtenidos.
-         * @param {string} path - La ruta del endpoint de la API (ej. "/startups").
-         * @returns {Promise<Object|null>} Los datos de la respuesta JSON o null si hay un error.
-         */
-        async function fetchData(path) {
-            showLoading();
-            try {
-                const response = await fetch(`${BASE_API_URL}${path}`);
-                if (!response.ok) {
-                    // Si la respuesta no es OK, intenta leer el error del cuerpo
-                    const errorData = await response.json().catch(() => ({ detail: `Error HTTP! Estado: ${response.status}` }));
-                    throw new Error(errorData.detail || `Error HTTP! Estado: ${response.status}`);
-                }
-                let data = await response.json();
-                console.log(`Datos recibidos de ${BASE_API_URL}${path}:`, data);
-
-                // --- LÓGICA CLAVE PARA FUSIONAR MOCKS DE SESIÓN EN EL ENDPOINT RAÍZ ---
-                if (path === "") {
-                    // Aseguramos que las propiedades de sesión existan, si no vienen del backend.
-                    // Esto permite que el backend real pueda enviar sus propios datos de sesión,
-                    // pero si no lo hace, usamos los mocks.
-                    data.available_session_offers = data.available_session_offers || mockAvailableOffers;
-                    data.pending_session_requests = data.pending_session_requests || mockPendingRequests;
-                    data.session_history = data.session_history || mockSessionHistory;
-                    console.log("Datos de dashboard final (con mocks de sesión inyectados si es necesario):", data);
-                }
-
-                return data;
-
-            } catch (error) {
-                console.error("Error de fetch:", error);
-                showMessage(`Error al cargar datos: ${error.message}. Asegúrate de que tu backend esté corriendo en ${BASE_API_URL}`, 'error');
-
-                // --- fallback a mockData para el dashboard principal si la API falla ---
-                // Este bloque solo se activa si fetchData("") falla COMPLETAMENTE.
-                if (path === "") {
-                    console.warn("Falló la conexión con la API para el dashboard principal. Usando datos mock completos como fallback.");
-                    return {
-                        key_statistics: { total_startups: 10 },
-                        startup_contacts: [
-                            { company: 'TechInnovate (Mock)', contact: 'Juan Pérez', email: 'juan@tech.com', sector: 'Tecnología' },
-                            { company: 'GreenSolutions (Mock)', contact: 'Ana López', email: 'ana@green.com', sector: 'Sostenibilidad' },
-                            { company: 'Artify AI (Mock)', contact: 'Pedro Gómez', email: 'pedro@artify.ai', sector: 'IA & Arte' },
-                            { company: 'MediCare+ (Mock)', contact: 'Laura Ruiz', email: 'laura@medicare.com', sector: 'Salud Digital' },
-                            { company: 'EduStream (Mock)', contact: 'Miguel Torres', email: 'miguel@edustream.com', sector: 'EdTech' }
-                        ],
-                        all_startups: [
-                            { id: 's1', company: 'TechInnovate (Mock)', sector: 'Tecnología', stage: 'Semilla', description: 'Plataforma innovadora para desarrollo de software.', website: 'https://techinnovate.com', email: 'info@techinnovate.com' },
-                            { id: 's2', company: 'GreenSolutions (Mock)', sector: 'Sostenibilidad', stage: 'Crecimiento', description: 'Desarrollo de soluciones eco-amigables.', website: 'https://greensolutions.co', email: 'contact@greensolutions.co' },
-                            { id: 's3', company: 'Artify AI (Mock)', sector: 'IA & Arte', stage: 'Semilla', description: 'Generación de arte con inteligencia artificial.', website: 'https://artify.ai', email: 'hello@artify.ai' },
-                            { id: 's4', company: 'MediCare+ (Mock)', sector: 'Salud Digital', stage: 'Crecimiento', description: 'App para gestión de citas médicas y telemedicina.', website: 'https://medicareplus.app', email: 'support@medicareplus.app' },
-                            { id: 's5', company: 'EduStream (Mock)', sector: 'EdTech', stage: 'Semilla', description: 'Plataforma de streaming educativo interactivo.', website: 'https://edustream.com', email: 'help@edustream.com' }
-                        ],
-                        available_session_offers: mockAvailableOffers,
-                        pending_session_requests: mockPendingRequests,
-                        session_history: mockSessionHistory
-                    };
-                }
-                return null;
-            } finally {
-                hideLoading();
-            }
-        }
+        return null;
+    } finally {
+        hideLoading();
+    }
+}
 
 
-        /**
-         * Simula el envío de datos a un endpoint.
-         * @param {string} path - La ruta simulada del endpoint (ej. "/mock-offer").
-         * @param {Object} data - Los datos a "enviar".
-         * @returns {Promise<Object|null>} Una respuesta simulada.
-         */
-        async function postData(path, data) {
-            showLoading();
-            try {
-                console.log(`Simulando POST a ${path} con datos:`, data);
-                await new Promise(resolve => setTimeout(resolve, 500)); // Simula un retraso
-                showMessage(`Operación exitosa para ${path}! (Simulado)`, 'success');
-                return { message: "Operación simulada con éxito" };
-            } catch (error) {
-                console.error("Error de post (simulado):", error);
-                showMessage(`Error simulado: ${error.message}`, 'error');
-                return null;
-            } finally {
-                hideLoading();
-            }
-        }
+/**
+ * Simula el envío de datos a un endpoint.
+ * @param {string} path - La ruta simulada del endpoint (ej. "/mock-offer").
+ * @param {Object} data - Los datos a "enviar".
+ * @returns {Promise<Object|null>} Una respuesta simulada.
+ */
+async function postData(path, data) {
+    showLoading();
+    try {
+        console.log(`Simulando POST a ${path} con datos:`, data);
+        await new Promise(resolve => setTimeout(resolve, 500)); // Simula un retraso
+        showMessage(`Operación exitosa para ${path}! (Simulado)`, 'success');
+        return { message: "Operación simulada con éxito" };
+    } catch (error) {
+        console.error("Error de post (simulado):", error);
+        showMessage(`Error simulado: ${error.message}`, 'error');
+        return null;
+    } finally {
+        hideLoading();
+    }
+}
 
-        // --- Funciones de Renderizado de Datos del Dashboard Principal ---
+// --- Funciones de Renderizado de Datos del Dashboard Principal ---
 
-        function renderKeyStatistics(data) {
-            const totalStartupsEl = document.getElementById('totalStartups');
-            if (totalStartupsEl) {
-                totalStartupsEl.textContent = data.total_startups;
-            }
-        }
+function renderKeyStatistics(data) {
+    const totalStartupsEl = document.getElementById('totalStartups');
+    if (totalStartupsEl) {
+        totalStartupsEl.textContent = data.total_startups;
+    }
+}
 
-        function renderContactsTable(contactsToRender) {
-            const tableDiv = document.getElementById('contactsTable');
-            if (!tableDiv) return;
+function renderContactsTable(contactsToRender) {
+    const tableDiv = document.getElementById('contactsTable');
+    if (!tableDiv) return;
 
-            tableDiv.innerHTML = contactsToRender.length ? `
+    tableDiv.innerHTML = contactsToRender.length ? `
         <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
             <thead class="bg-gray-50">
                 <tr>
@@ -715,30 +712,28 @@
             </tbody>
         </table>
     ` : '<p class="text-gray-600 p-4 text-center">No se encontraron contactos.</p>';
-        }
+}
 
-        function filterContacts() {
-            const searchInput = document.getElementById('contactSearchInput');
-            const search = searchInput ? searchInput.value.toLowerCase() : '';
+function filterContacts() {
+    const searchInput = document.getElementById('contactSearchInput');
+    const search = searchInput ? searchInput.value.toLowerCase() : '';
 
-            const filtered = allContacts.filter(c =>
-            (c.company?.toLowerCase().includes(search) ||
-                c.sector?.toLowerCase().includes(search) ||
-                c.contact?.toLowerCase().includes(search) ||
-                c.email?.toLowerCase().includes(search))
-            );
-            renderContactsTable(filtered);
-        }
+    const filtered = allContacts.filter(c =>
+        c.company?.toLowerCase().includes(search)
+    );
 
-        // --- Funciones de Renderizado de Sesiones (Ahora esperando los datos de currentDashboardData) ---
+    renderContactsTable(filtered);
+}
 
-        function renderAvailableOffersTable(offers) {
-            const availableOffersTableDiv = document.getElementById('availableOffersTable');
-            const claimOfferSelect = document.getElementById('claimOfferSelect');
-            if (!availableOffersTableDiv || !claimOfferSelect) return;
+// --- Funciones de Renderizado de Sesiones (Ahora esperando los datos de currentDashboardData) ---
 
-            if (offers && offers.length > 0) {
-                let tableHTML = `
+function renderAvailableOffersTable(offers) {
+    const availableOffersTableDiv = document.getElementById('availableOffersTable');
+    const claimOfferSelect = document.getElementById('claimOfferSelect');
+    if (!availableOffersTableDiv || !claimOfferSelect) return;
+
+    if (offers && offers.length > 0) {
+        let tableHTML = `
             <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
                 <thead class="bg-gray-50">
                     <tr>
@@ -750,8 +745,8 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
         `;
-                offers.forEach(offer => {
-                    tableHTML += `
+        offers.forEach(offer => {
+            tableHTML += `
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${offer.offering_startup || 'N/A'}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${offer.topic || 'N/A'}</td>
@@ -759,32 +754,32 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${offer.mentor || 'N/A'}</td>
                     </tr>
                 `;
-                });
-                tableHTML += `</tbody></table>`;
-                availableOffersTableDiv.innerHTML = tableHTML;
+        });
+        tableHTML += `</tbody></table>`;
+        availableOffersTableDiv.innerHTML = tableHTML;
 
-                // Rellenar el select de reclamar oferta
-                claimOfferSelect.innerHTML = '<option value="">-- Selecciona una oferta para reclamar --</option>';
-                offers.forEach(offer => {
-                    const option = document.createElement('option');
-                    option.value = offer.id; // Usar el ID de la oferta
-                    option.textContent = `${offer.offering_startup}: ${offer.topic}`;
-                    claimOfferSelect.appendChild(option);
-                });
-                document.getElementById('claimSessionBtn').disabled = false; // Habilitar botón de reclamar
-            } else {
-                availableOffersTableDiv.innerHTML = '<p class="text-gray-600 p-4 text-center">No hay ofertas de sesiones disponibles en este momento.</p>';
-                claimOfferSelect.innerHTML = '<option value="">-- No hay ofertas para reclamar --</option>';
-                document.getElementById('claimSessionBtn').disabled = true; // Deshabilitar si no hay ofertas
-            }
-        }
+        // Rellenar el select de reclamar oferta
+        claimOfferSelect.innerHTML = '<option value="">-- Selecciona una oferta para reclamar --</option>';
+        offers.forEach(offer => {
+            const option = document.createElement('option');
+            option.value = offer.id; // Usar el ID de la oferta
+            option.textContent = `${offer.offering_startup}: ${offer.topic}`;
+            claimOfferSelect.appendChild(option);
+        });
+        document.getElementById('claimSessionBtn').disabled = false; // Habilitar botón de reclamar
+    } else {
+        availableOffersTableDiv.innerHTML = '<p class="text-gray-600 p-4 text-center">No hay ofertas de sesiones disponibles en este momento.</p>';
+        claimOfferSelect.innerHTML = '<option value="">-- No hay ofertas para reclamar --</option>';
+        document.getElementById('claimSessionBtn').disabled = true; // Deshabilitar si no hay ofertas
+    }
+}
 
-        function renderPendingRequestsTable(requests) {
-            const pendingRequestsTableDiv = document.getElementById('pendingRequestsTable');
-            if (!pendingRequestsTableDiv) return;
+function renderPendingRequestsTable(requests) {
+    const pendingRequestsTableDiv = document.getElementById('pendingRequestsTable');
+    if (!pendingRequestsTableDiv) return;
 
-            if (requests && requests.length > 0) {
-                let tableHTML = `
+    if (requests && requests.length > 0) {
+        let tableHTML = `
             <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
                 <thead class="bg-gray-50">
                     <tr>
@@ -796,8 +791,8 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
         `;
-                requests.forEach(request => {
-                    tableHTML += `
+        requests.forEach(request => {
+            tableHTML += `
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${request.requesting_startup || 'N/A'}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${request.topic || 'N/A'}</td>
@@ -805,20 +800,20 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${request.status || 'N/A'}</td>
                     </tr>
                 `;
-                });
-                tableHTML += `</tbody></table>`;
-                pendingRequestsTableDiv.innerHTML = tableHTML;
-            } else {
-                pendingRequestsTableDiv.innerHTML = '<p class="text-gray-600 p-4 text-center">No hay solicitudes de sesiones pendientes en este momento.</p>';
-            }
-        }
+        });
+        tableHTML += `</tbody></table>`;
+        pendingRequestsTableDiv.innerHTML = tableHTML;
+    } else {
+        pendingRequestsTableDiv.innerHTML = '<p class="text-gray-600 p-4 text-center">No hay solicitudes de sesiones pendientes en este momento.</p>';
+    }
+}
 
-        function renderSessionHistoryTable(history) {
-            const sessionHistoryTableDiv = document.getElementById('sessionHistoryTable');
-            if (!sessionHistoryTableDiv) return;
+function renderSessionHistoryTable(history) {
+    const sessionHistoryTableDiv = document.getElementById('sessionHistoryTable');
+    if (!sessionHistoryTableDiv) return;
 
-            if (history && history.length > 0) {
-                let tableHTML = `
+    if (history && history.length > 0) {
+        let tableHTML = `
             <table class="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
                 <thead class="bg-gray-50">
                     <tr>
@@ -831,8 +826,8 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
         `;
-                history.forEach(session => {
-                    tableHTML += `
+        history.forEach(session => {
+            tableHTML += `
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${session.startup1 || 'N/A'}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${session.startup2 || 'N/A'}</td>
@@ -841,112 +836,112 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${session.status || 'N/A'}</td>
                     </tr>
                 `;
-                });
-                tableHTML += `</tbody></table>`;
-                sessionHistoryTableDiv.innerHTML = tableHTML;
-            } else {
-                sessionHistoryTableDiv.innerHTML = '<p class="text-gray-600 p-4 text-center">No hay sesiones en el historial.</p>';
-            }
+        });
+        tableHTML += `</tbody></table>`;
+        sessionHistoryTableDiv.innerHTML = tableHTML;
+    } else {
+        sessionHistoryTableDiv.innerHTML = '<p class="text-gray-600 p-4 text-center">No hay sesiones en el historial.</p>';
+    }
+}
+
+// --- Funciones de Población de UI ---
+
+function populateStartupSelects(startupsData) {
+    allStartups = startupsData;
+    startupMap = {};
+    startupNameToId = {};
+    allStartups.forEach(s => {
+        if (s.company) {
+            startupMap[s.company] = s;
+            startupNameToId[s.company] = s.id;
         }
+    });
 
-        // --- Funciones de Población de UI ---
-
-        function populateStartupSelects(startupsData) {
-            allStartups = startupsData;
-            startupMap = {};
-            startupNameToId = {};
-            allStartups.forEach(s => {
-                if (s.company) {
-                    startupMap[s.company] = s;
-                    startupNameToId[s.company] = s.id;
-                }
-            });
-
-            // Selectores para sugerencias
-            const selectStartupSuggestionsEl = document.getElementById('selectStartupSuggestions');
-            if (selectStartupSuggestionsEl) {
-                const currentSelectedValue = selectStartupSuggestionsEl.value;
-                selectStartupSuggestionsEl.innerHTML = '<option value="">-- Selecciona una startup --</option>';
-                allStartups.forEach(startup => {
-                    if (startup.company) {
-                        const option = document.createElement('option');
-                        option.value = startup.company;
-                        option.textContent = startup.company;
-                        selectStartupSuggestionsEl.appendChild(option);
-                    }
-                });
-                if (currentSelectedValue && Array.from(selectStartupSuggestionsEl.options).some(opt => opt.value === currentSelectedValue)) {
-                    selectStartupSuggestionsEl.value = currentSelectedValue;
-                } else {
-                    selectStartupSuggestionsEl.value = '';
-                }
-                if (selectStartupSuggestionsEl.value && selectStartupSuggestionsEl.value !== "") {
-                    selectStartupSuggestionsEl.dispatchEvent(new Event('change'));
-                }
+    // Selectores para sugerencias
+    const selectStartupSuggestionsEl = document.getElementById('selectStartupSuggestions');
+    if (selectStartupSuggestionsEl) {
+        const currentSelectedValue = selectStartupSuggestionsEl.value;
+        selectStartupSuggestionsEl.innerHTML = '<option value="">-- Selecciona una startup --</option>';
+        allStartups.forEach(startup => {
+            if (startup.company) {
+                const option = document.createElement('option');
+                option.value = startup.company;
+                option.textContent = startup.company;
+                selectStartupSuggestionsEl.appendChild(option);
             }
-
-            // Selectores específicos de la sección de sesiones (solo los de los formularios)
-            const sessionSelects = [
-                document.getElementById('offeringStartup'),
-                document.getElementById('requestingStartup')
-            ];
-
-            sessionSelects.forEach(selectElement => {
-                if (!selectElement) return;
-                selectElement.innerHTML = '<option value="">-- Selecciona tu startup --</option>';
-                allStartups.forEach(startup => {
-                    if (startup.company && startup.id) {
-                        const option = document.createElement('option');
-                        option.value = startup.id; // Usar el ID como valor para formularios
-                        option.textContent = startup.company;
-                        selectElement.appendChild(option);
-                    }
-                });
-            });
+        });
+        if (currentSelectedValue && Array.from(selectStartupSuggestionsEl.options).some(opt => opt.value === currentSelectedValue)) {
+            selectStartupSuggestionsEl.value = currentSelectedValue;
+        } else {
+            selectStartupSuggestionsEl.value = '';
         }
+        if (selectStartupSuggestionsEl.value && selectStartupSuggestionsEl.value !== "") {
+            selectStartupSuggestionsEl.dispatchEvent(new Event('change'));
+        }
+    }
 
-        function updateSuggestedConnections() {
-            const selectStartupSuggestionsEl = document.getElementById('selectStartupSuggestions');
-            if (!selectStartupSuggestionsEl) return;
+    // Selectores específicos de la sección de sesiones (solo los de los formularios)
+    const sessionSelects = [
+        document.getElementById('offeringStartup'),
+        document.getElementById('requestingStartup')
+    ];
 
-            const selectedName = selectStartupSuggestionsEl.value;
-            const selectedStartupData = startupMap[selectedName];
-
-            const similarStartupsDiv = document.getElementById('similarStartups');
-            const noSuggestionsMessage = document.getElementById('noSuggestionsMessage');
-
-            if (similarStartupsDiv) similarStartupsDiv.innerHTML = '';
-            if (noSuggestionsMessage) noSuggestionsMessage.classList.add('hidden');
-
-            if (!selectedStartupData || selectedName === "") {
-                if (noSuggestionsMessage) {
-                    noSuggestionsMessage.classList.remove('hidden');
-                    noSuggestionsMessage.textContent = "Por favor, selecciona una startup para ver sugerencias.";
-                }
-                return;
+    sessionSelects.forEach(selectElement => {
+        if (!selectElement) return;
+        selectElement.innerHTML = '<option value="">-- Selecciona tu startup --</option>';
+        allStartups.forEach(startup => {
+            if (startup.company && startup.id) {
+                const option = document.createElement('option');
+                option.value = startup.id; // Usar el ID como valor para formularios
+                option.textContent = startup.company;
+                selectElement.appendChild(option);
             }
+        });
+    });
+}
 
-            const sector = selectedStartupData.sector || '';
-            const stage = selectedStartupData.stage || '';
+function updateSuggestedConnections() {
+    const selectStartupSuggestionsEl = document.getElementById('selectStartupSuggestions');
+    if (!selectStartupSuggestionsEl) return;
 
-            const suggestions = allStartups.filter(s => {
-                const isSameId = s.id === selectedStartupData.id;
-                const sSector = s.sector || '';
-                const sStage = s.stage || '';
+    const selectedName = selectStartupSuggestionsEl.value;
+    const selectedStartupData = startupMap[selectedName];
 
-                const isSimilarSector = sSector === sector && sector !== '';
-                const isSimilarStage = sStage === stage && stage !== '';
+    const similarStartupsDiv = document.getElementById('similarStartups');
+    const noSuggestionsMessage = document.getElementById('noSuggestionsMessage');
 
-                return !isSameId && (isSimilarSector || isSimilarStage);
-            });
+    if (similarStartupsDiv) similarStartupsDiv.innerHTML = '';
+    if (noSuggestionsMessage) noSuggestionsMessage.classList.add('hidden');
 
-            const top5 = suggestions.slice(0, 5);
+    if (!selectedStartupData || selectedName === "") {
+        if (noSuggestionsMessage) {
+            noSuggestionsMessage.classList.remove('hidden');
+            noSuggestionsMessage.textContent = "Por favor, selecciona una startup para ver sugerencias.";
+        }
+        return;
+    }
 
-            if (top5.length > 0) {
-                top5.forEach(s => {
-                    const expander = document.createElement('div');
-                    expander.className = 'card mb-2 p-4';
-                    expander.innerHTML = `
+    const sector = selectedStartupData.sector || '';
+    const stage = selectedStartupData.stage || '';
+
+    const suggestions = allStartups.filter(s => {
+        const isSameId = s.id === selectedStartupData.id;
+        const sSector = s.sector || '';
+        const sStage = s.stage || '';
+
+        const isSimilarSector = sSector === sector && sector !== '';
+        const isSimilarStage = sStage === stage && stage !== '';
+
+        return !isSameId && (isSimilarSector || isSimilarStage);
+    });
+
+    const top5 = suggestions.slice(0, 5);
+
+    if (top5.length > 0) {
+        top5.forEach(s => {
+            const expander = document.createElement('div');
+            expander.className = 'card mb-2 p-4';
+            expander.innerHTML = `
                 <div class="expander-header">
                     <span><strong>${s.company || 'Startup'}</strong> - Sector: ${s.sector || 'N/A'} | Etapa: ${s.stage || 'N/A'}</span>
                     <span><i class="fas fa-chevron-down"></i></span>
@@ -957,162 +952,162 @@
                     <p><strong>Correo Electrónico de Contacto:</strong> ${s.email || 'N/A'}</p>
                 </div>
             `;
-                    expander.querySelector('.expander-header').addEventListener('click', () => {
-                        const content = expander.querySelector('.expander-content');
-                        const icon = expander.querySelector('.expander-header i');
-                        if (content) content.classList.toggle('active');
-                        if (icon) {
-                            if (content && content.classList.contains('active')) {
-                                icon.classList.remove('fa-chevron-down');
-                                icon.classList.add('fa-chevron-up');
-                            } else {
-                                icon.classList.remove('fa-chevron-up');
-                                icon.classList.add('fa-chevron-down');
-                            }
-                        }
-                    });
-                    if (similarStartupsDiv) similarStartupsDiv.appendChild(expander);
-                });
-            } else {
-                if (noSuggestionsMessage) {
-                    noSuggestionsMessage.classList.remove('hidden');
-                    noSuggestionsMessage.textContent = "No se encontraron sugerencias para esta startup basadas en el sector o la etapa.";
-                }
-            }
-        }
-
-        // --- Manejadores de Eventos para Sesiones (Pestañas y Formularios) ---
-
-        // Lógica para cambiar entre pestañas
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', () => {
-                // Eliminar 'active' de todos los botones y contenidos
-                document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
-
-                // Añadir 'active' al botón clickeado
-                button.classList.add('active');
-
-                // Mostrar el contenido de la pestaña correspondiente
-                const tabId = button.dataset.tab;
-                const targetTabContent = document.getElementById(tabId);
-                if (targetTabContent) {
-                    targetTabContent.classList.remove('hidden');
-                    targetTabContent.classList.add('active'); // Añadir 'active' para CSS si es necesario
-                }
-            });
-        });
-
-        // Manejador para el formulario de ofrecer sesión (simulado)
-        const offerForm = document.getElementById('offerForm');
-        if (offerForm) {
-            offerForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(offerForm);
-                const data = Object.fromEntries(formData.entries());
-                // Obtener el nombre de la startup para el mock de la respuesta
-                const offeringStartupName = allStartups.find(s => s.id === data.offering_startup_id)?.company || 'Startup Desconocida';
-
-                // Simula una operación POST
-                await postData('/mock-offer', {
-                    offering_startup: offeringStartupName,
-                    topic: data.topic,
-                    details: data.details,
-                    mentor: 'Mentor Asignado (Simulado)'
-                });
-                offerForm.reset();
-                // Opcional: Si quieres que la nueva oferta aparezca en la tabla,
-                // tendrías que añadirla manualmente a mockAvailableOffers y luego volver a renderizar.
-                // Por ahora, solo se muestra el mensaje de éxito.
-                // mockAvailableOffers.push({ id: `offer${mockAvailableOffers.length + 1}`, offering_startup: offeringStartupName, topic: data.topic, details: data.details, mentor: 'Mentor Asignado (Simulado)' });
-                // renderAvailableOffersTable(mockAvailableOffers);
-            });
-        }
-
-        // Manejador para el formulario de solicitar sesión (simulado)
-        const requestForm = document.getElementById('requestForm');
-        if (requestForm) {
-            requestForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(requestForm);
-                const data = Object.fromEntries(formData.entries());
-                // Obtener el nombre de la startup para el mock de la respuesta
-                const requestingStartupName = allStartups.find(s => s.id === data.requesting_startup_id)?.company || 'Startup Desconocida';
-
-                // Simula una operación POST
-                await postData('/mock-request', {
-                    requesting_startup: requestingStartupName,
-                    topic: data.topic,
-                    details: data.details,
-                    status: 'Pendiente'
-                });
-                requestForm.reset();
-                // Opcional: Similar a las ofertas, si quieres que la nueva solicitud aparezca.
-                // mockPendingRequests.push({ id: `req${mockPendingRequests.length + 1}`, requesting_startup: requestingStartupName, topic: data.topic, details: data.details, status: 'Pendiente' });
-                // renderPendingRequestsTable(mockPendingRequests);
-            });
-        }
-
-        // Manejador para el botón de reclamar sesión (simulado)
-        const claimSessionBtn = document.getElementById('claimSessionBtn');
-        if (claimSessionBtn) {
-            claimSessionBtn.addEventListener('click', async () => {
-                const claimOfferSelect = document.getElementById('claimOfferSelect');
-                const selectedOfferId = claimOfferSelect.value;
-                if (selectedOfferId) {
-                    const selectedOffer = mockAvailableOffers.find(offer => offer.id === selectedOfferId);
-                    if (selectedOffer) {
-                        // Simula una operación POST
-                        await postData('/mock-claim-session', { offer_id: selectedOfferId, offer_details: selectedOffer });
-                        showMessage(`Has reclamado la sesión "${selectedOffer.topic}" de ${selectedOffer.offering_startup}. (Simulado)`, 'success');
-                        // En un escenario real, aquí podrías actualizar los mock data o recargar para reflejar el cambio.
-                        // Por ejemplo, quitar la oferta de mockAvailableOffers y añadirla a mockSessionHistory.
+            expander.querySelector('.expander-header').addEventListener('click', () => {
+                const content = expander.querySelector('.expander-content');
+                const icon = expander.querySelector('.expander-header i');
+                if (content) content.classList.toggle('active');
+                if (icon) {
+                    if (content && content.classList.contains('active')) {
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                    } else {
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
                     }
-                } else {
-                    showMessage('Por favor, selecciona una oferta para reclamar.', 'warning');
                 }
             });
+            if (similarStartupsDiv) similarStartupsDiv.appendChild(expander);
+        });
+    } else {
+        if (noSuggestionsMessage) {
+            noSuggestionsMessage.classList.remove('hidden');
+            noSuggestionsMessage.textContent = "No se encontraron sugerencias para esta startup basadas en el sector o la etapa.";
         }
+    }
+}
 
+// --- Manejadores de Eventos para Sesiones (Pestañas y Formularios) ---
 
-        // --- Escuchadores de Eventos (General) ---
-        const selectStartupSuggestionsEl = document.getElementById('selectStartupSuggestions');
-        if (selectStartupSuggestionsEl) {
-            selectStartupSuggestionsEl.addEventListener('change', updateSuggestedConnections);
+// Lógica para cambiar entre pestañas
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', () => {
+        // Eliminar 'active' de todos los botones y contenidos
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+
+        // Añadir 'active' al botón clickeado
+        button.classList.add('active');
+
+        // Mostrar el contenido de la pestaña correspondiente
+        const tabId = button.dataset.tab;
+        const targetTabContent = document.getElementById(tabId);
+        if (targetTabContent) {
+            targetTabContent.classList.remove('hidden');
+            targetTabContent.classList.add('active'); // Añadir 'active' para CSS si es necesario
         }
+    });
+});
 
-        const contactSearchInputEl = document.getElementById('contactSearchInput');
-        if (contactSearchInputEl) {
-            contactSearchInputEl.addEventListener('input', filterContacts);
-        }
+// Manejador para el formulario de ofrecer sesión (simulado)
+const offerForm = document.getElementById('offerForm');
+if (offerForm) {
+    offerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(offerForm);
+        const data = Object.fromEntries(formData.entries());
+        // Obtener el nombre de la startup para el mock de la respuesta
+        const offeringStartupName = allStartups.find(s => s.id === data.offering_startup_id)?.company || 'Startup Desconocida';
 
-        // --- Función de Carga Inicial de la Aplicación ---
-        async function initApp() {
-            // Obtener todos los datos del panel desde el endpoint raíz de la API
-            // fetchData("") ahora intentará obtener datos reales y fusionará los mocks de sesión.
-            const data = await fetchData("");
-            if (data) {
-                currentDashboardData = data; // Almacenar los datos obtenidos globalmente
+        // Simula una operación POST
+        await postData('/mock-offer', {
+            offering_startup: offeringStartupName,
+            topic: data.topic,
+            details: data.details,
+            mentor: 'Mentor Asignado (Simulado)'
+        });
+        offerForm.reset();
+        // Opcional: Si quieres que la nueva oferta aparezca en la tabla,
+        // tendrías que añadirla manualmente a mockAvailableOffers y luego volver a renderizar.
+        // Por ahora, solo se muestra el mensaje de éxito.
+        // mockAvailableOffers.push({ id: `offer${mockAvailableOffers.length + 1}`, offering_startup: offeringStartupName, topic: data.topic, details: data.details, mentor: 'Mentor Asignado (Simulado)' });
+        // renderAvailableOffersTable(mockAvailableOffers);
+    });
+}
 
-                // ¡IMPORTANTE! Almacena los contactos en la variable global allContacts para el filtrado
-                allContacts = currentDashboardData.startup_contacts || []; // Usa datos reales, si no hay, usa array vacío
-                allStartups = currentDashboardData.all_startups || []; // Usa datos reales, si no hay, usa array vacío
+// Manejador para el formulario de solicitar sesión (simulado)
+const requestForm = document.getElementById('requestForm');
+if (requestForm) {
+    requestForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(requestForm);
+        const data = Object.fromEntries(formData.entries());
+        // Obtener el nombre de la startup para el mock de la respuesta
+        const requestingStartupName = allStartups.find(s => s.id === data.requesting_startup_id)?.company || 'Startup Desconocida';
 
-                // Renderizar las secciones principales del dashboard
-                renderKeyStatistics(currentDashboardData.key_statistics || { total_startups: 0 }); // Usa datos reales o fallback
-                renderContactsTable(allContacts); // Renderiza la tabla inicial con todos los contactos
-                populateStartupSelects(allStartups); // Rellena los selectores con los datos "reales" de startups
+        // Simula una operación POST
+        await postData('/mock-request', {
+            requesting_startup: requestingStartupName,
+            topic: data.topic,
+            details: data.details,
+            status: 'Pendiente'
+        });
+        requestForm.reset();
+        // Opcional: Similar a las ofertas, si quieres que la nueva solicitud aparezca.
+        // mockPendingRequests.push({ id: `req${mockPendingRequests.length + 1}`, requesting_startup: requestingStartupName, topic: data.topic, details: data.details, status: 'Pendiente' });
+        // renderPendingRequestsTable(mockPendingRequests);
+    });
+}
 
-                // Las llamadas a las funciones de renderizado de sesiones ahora usarán las propiedades
-                // de `currentDashboardData`, que ya deberían contener los mocks (o datos reales si tu API los envía).
-                renderAvailableOffersTable(currentDashboardData.available_session_offers);
-                renderPendingRequestsTable(currentDashboardData.pending_session_requests);
-                renderSessionHistoryTable(currentDashboardData.session_history);
+// Manejador para el botón de reclamar sesión (simulado)
+const claimSessionBtn = document.getElementById('claimSessionBtn');
+if (claimSessionBtn) {
+    claimSessionBtn.addEventListener('click', async () => {
+        const claimOfferSelect = document.getElementById('claimOfferSelect');
+        const selectedOfferId = claimOfferSelect.value;
+        if (selectedOfferId) {
+            const selectedOffer = mockAvailableOffers.find(offer => offer.id === selectedOfferId);
+            if (selectedOffer) {
+                // Simula una operación POST
+                await postData('/mock-claim-session', { offer_id: selectedOfferId, offer_details: selectedOffer });
+                showMessage(`Has reclamado la sesión "${selectedOffer.topic}" de ${selectedOffer.offering_startup}. (Simulado)`, 'success');
+                // En un escenario real, aquí podrías actualizar los mock data o recargar para reflejar el cambio.
+                // Por ejemplo, quitar la oferta de mockAvailableOffers y añadirla a mockSessionHistory.
             }
+        } else {
+            showMessage('Por favor, selecciona una oferta para reclamar.', 'warning');
         }
+    });
+}
 
-        // Asegurarse de que el script se ejecute una vez que la ventana y el DOM estén completamente cargados
-        window.onload = initApp;
+
+// --- Escuchadores de Eventos (General) ---
+const selectStartupSuggestionsEl = document.getElementById('selectStartupSuggestions');
+if (selectStartupSuggestionsEl) {
+    selectStartupSuggestionsEl.addEventListener('change', updateSuggestedConnections);
+}
+
+const contactSearchInputEl = document.getElementById('contactSearchInput');
+if (contactSearchInputEl) {
+    contactSearchInputEl.addEventListener('input', filterContacts);
+}
+
+// --- Función de Carga Inicial de la Aplicación ---
+async function initApp() {
+    // Obtener todos los datos del panel desde el endpoint raíz de la API
+    // fetchData("") ahora intentará obtener datos reales y fusionará los mocks de sesión.
+    const data = await fetchData("");
+    if (data) {
+        currentDashboardData = data; // Almacenar los datos obtenidos globalmente
+
+        // ¡IMPORTANTE! Almacena los contactos en la variable global allContacts para el filtrado
+        allContacts = currentDashboardData.startup_contacts || []; // Usa datos reales, si no hay, usa array vacío
+        allStartups = currentDashboardData.all_startups || []; // Usa datos reales, si no hay, usa array vacío
+
+        // Renderizar las secciones principales del dashboard
+        renderKeyStatistics(currentDashboardData.key_statistics || { total_startups: 0 }); // Usa datos reales o fallback
+        renderContactsTable(allContacts); // Renderiza la tabla inicial con todos los contactos
+        populateStartupSelects(allStartups); // Rellena los selectores con los datos "reales" de startups
+
+        // Las llamadas a las funciones de renderizado de sesiones ahora usarán las propiedades
+        // de `currentDashboardData`, que ya deberían contener los mocks (o datos reales si tu API los envía).
+        renderAvailableOffersTable(currentDashboardData.available_session_offers);
+        renderPendingRequestsTable(currentDashboardData.pending_session_requests);
+        renderSessionHistoryTable(currentDashboardData.session_history);
+    }
+}
+
+// Asegurarse de que el script se ejecute una vez que la ventana y el DOM estén completamente cargados
+window.onload = initApp;
     </script>
 </body>
 
